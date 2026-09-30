@@ -1,0 +1,63 @@
+{
+  "name": "cronicas-rpg",
+  "productName": "Crônicas",
+  "version": "1.0.0",
+  "description": "RPG desktop com Mestre IA (Claude API / Claude Code), ficha, inventário em pastas e temas que mudam com a história.",
+  "main": "main.js",
+  "author": "Andraus",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:linux": "electron-builder --linux",
+    "dist:mac": "electron-builder --mac",
+    "voz:instalar": "node voz/chatterbox/instalar.js",
+    "voz:teste": "node voz/chatterbox/instalar.js --teste"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.andraus.cronicas",
+    "productName": "Crônicas",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "directories": {
+      "buildResources": "build"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "extraResources": [
+      {
+        "from": "voz/chatterbox",
+        "to": "voz/chatterbox",
+        "filter": [
+          "servico.py",
+          "requirements.txt",
+          "LEIA-ME.md"
+        ]
+      }
+    ]
+  }
+}
