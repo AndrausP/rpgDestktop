@@ -21,6 +21,21 @@ const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toL
 
 export const urlCena = (id) => cat.cenas.find((c) => c.id === id)?.url || null;
 export const cenaDoTema = (tema) => urlCena(cat.temaPadrao?.[tema]);
+/** Mapa de batalha (vista de cima) que combina com o cenário atual. */
+export function urlBatalha(cena, tema) {
+  return mapaBatalha(cena, tema)?.url || null;
+}
+/** Mapa de batalha + a grade medida dele ({x, y, zona, mapa}). */
+export function mapaBatalha(cena, tema) {
+  const b = cat.batalha || {};
+  const id = [cena, cat.batalhaDaCena?.[cena], cat.batalhaDoTema?.[tema], 'acampamento-planicie'].find((k) => k && b[k]);
+  return id ? { id, url: b[id], grade: cat.batalhaGrade?.[id] || null } : null;
+}
+/** Ícone ilustrado do compêndio (renderer/assets/ui). */
+export const icone = (nome) => `assets/ui/${nome}.webp`;
+export const iconeHtml = (nome, cls = '') => `<img class="ic-ui ${cls}" src="assets/ui/${nome}.webp" alt="" draggable="false">`;
+/** Peças do kit de interface. Caminho explícito, separado dos WebP do compêndio. */
+export const iconeKitHtml = (grupo, nome, cls = '') => `<img class="ic-ui kit ${cls}" src="assets/ui/Icons/${grupo}/${nome}.png" alt="" draggable="false">`;
 export const urlRetrato = (id) => cat.retratos.find((r) => r.id === id)?.url || null;
 /** Arte de corpo inteiro (fundo transparente) do elenco de NPCs, quando existe. */
 export const urlCorpo = (id) => cat.retratos.find((r) => r.id === id)?.corpoUrl || null;
@@ -33,6 +48,13 @@ const ANIMAIS = [
   [/gosma|slime|lodo/, '🟢'], [/golem|gargula/, '🗿'], [/polvo|kraken|lula/, '🐙'], [/tubarao/, '🦈'],
 ];
 const RETRATO_POR_PALAVRA = [
+  // criaturas com arte no bestiário
+  [/lobo|cao|cachorro|hound|matilha/, 'cao-de-muitas-sombras'], [/esquelet|ossos|morto-vivo|lich/, 'pastor-de-ossos'], [/aranha/, 'aranha-sino'],
+  [/fantasma|espectro|assombra|alma penada|banshee/, 'viuva-da-nevoa'], [/arvore|ent\b|treant/, 'arvore-andante'], [/sombra|trevas|umbra/, 'devorador-de-luz'],
+  [/lodo|gosma|slime|pantano|brejo/, 'boca-do-pantano'], [/sapo|batrac/, 'sapo-catedral'], [/touro|minotaur|boi\b/, 'boi-do-abismo'],
+  [/sereia|nereida/, 'sereia-de-cinzas'], [/cervo|veado/, 'cervo-de-vidro'], [/automato|relogio|golem|constructo/, 'relogio-faminto'],
+  [/carnical|ghoul|zumbi/, 'carnical-de-porcelana'], [/armadura vazia|cavaleiro negro|cavaleiro morto/, 'cavaleiro-oco'], [/anjo caido|anjo afogado/, 'anjo-afogado'],
+  [/verme|minhoca/, 'rainha-dos-vermes-dourados'], [/abelha|vespa|colmeia|enxame/, 'homem-colmeia'], [/mosca|profano/, 'bispo-das-moscas'],
   // funções com rosto próprio no elenco de NPCs (vêm antes das genéricas)
   [/estalajadeira|hospedeira/, 'helena-voss'], [/sacerdote|padre|monge|abade/, 'mathias'], [/curandeir|parteira/, 'celestine'],
   [/general|marechal|comandante do exercito/, 'draven'], [/bruxa|feiticeira do pantano/, 'morwenna'], [/vidente|cartomante|adivinh|oraculo/, 'nessa-lua-clara'],
@@ -62,9 +84,9 @@ export function idRetratoNpc(npc) {
   const doElenco = cat.retratos.find((r) => r.corpoUrl && (r.id === tokens.join('-') || (tokens.length === 1 && r.id.split('-')[0] === tokens[0])));
   if (doElenco) return doElenco.id;
   const txt = norm(`${npc.nome} ${npc.descricao || ''}`);
-  if (ANIMAIS.some(([re]) => re.test(txt))) return null;
   const achado = RETRATO_POR_PALAVRA.find(([re]) => re.test(txt));
-  return achado ? achado[1] : null;
+  if (achado && urlRetrato(achado[1])) return achado[1];
+  return null; // animais e criaturas sem arte usam emoji
 }
 export function retratoNpc(npc) {
   return urlRetrato(idRetratoNpc(npc));
@@ -95,6 +117,9 @@ const EMOJI_PASTA = {
   municao: '🏹', ferramentas: '🧰', ingredientes: '🌿', reliquias: '💎', tesouros: '💰', livros: '📚', mapas: '🗺️',
 };
 export const emojiPasta = (p) => EMOJI_PASTA[p] || '📁';
+/** Pastas padrão têm ícone ilustrado (compêndio); as outras usam emoji. */
+const ICONE_PASTA = { armas: 'armas', armaduras: 'armaduras', consumiveis: 'pocao', 'itens-chave': 'chave', diversos: 'forja', mapas: 'mapa', tesouros: 'ouro' };
+export const iconePastaHtml = (p) => (ICONE_PASTA[p] ? iconeHtml(ICONE_PASTA[p], 'pasta') : emojiPasta(p));
 
 export const RARIDADES = {
   comum: { nome: 'Comum', cor: '#b8b8b8' }, incomum: { nome: 'Incomum', cor: '#4fd17a' }, raro: { nome: 'Raro', cor: '#4aa3ff' },

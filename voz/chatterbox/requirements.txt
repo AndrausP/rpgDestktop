@@ -1,8 +1,0 @@
-# Instalação manual (o botão "Instalar" em Configurações → Voz faz isto sozinho):
-#   python3.11 -m venv .venv
-#   .venv/Scripts/python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cu124   (NVIDIA)
-#   .venv/Scripts/python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu     (sem GPU)
-#   .venv/Scripts/python -m pip install -r requirements.txt
-# Depois aponte "Python da voz" em Configurações para .venv/Scripts/python.exe
-chatterbox-tts==0.1.7
-soundfile

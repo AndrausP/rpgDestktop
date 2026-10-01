@@ -1,10 +1,10 @@
 // ═══════════════════════════════════════════════════════════════════════
-//  Vozes: o Mestre narra e cada personagem fala com a própria voz (Chatterbox).
+//  Vozes: o Mestre narra e cada personagem fala com a própria voz (KokoroSharp).
 //  - O mestre manda um ROTEIRO: [{quem: 'narrador' | NPC | 'heroi', texto, emocao}]
 //    (turnos antigos sem roteiro são quebrados por roteiro(), pelo travessão do diálogo)
 //  - vozDoNpc(): escolhe uma voz estável para cada NPC (pelo retrato, gênero e nome)
 //  - Narrador.falar(): sintetiza trecho a trecho e toca em sequência, adiantando o próximo
-//  Motores: 'chatterbox' (serviço Python) ou 'sistema' (voz do Windows/navegador, sem instalar nada).
+//  Motores: 'kokoro' (KokoroSharp, serviço C#) ou 'sistema' (voz do Windows/navegador, sem instalar nada).
 // ═══════════════════════════════════════════════════════════════════════
 import { audio } from './cenario.js';
 
@@ -248,6 +248,10 @@ export class Narrador {
   presetDe(quem, ctx) {
     if (quem === 'narrador') return PRESETS_VOZ[this.cfg.vozNarrador] ? this.cfg.vozNarrador : 'narrador-grave';
     if (quem === 'heroi') return PRESETS_VOZ[ctx.vozHeroi] ? ctx.vozHeroi : 'homem-jovem';
+    if (quem.startsWith('heroi:')) { // co-op: cada herói fala com a voz que o jogador dele escolheu
+      const v = ctx.vozesHerois?.[quem.slice(6)];
+      return PRESETS_VOZ[v] ? v : vozDoNpc({ nome: quem.slice(6) });
+    }
     const npc = (ctx.npcs || []).find((n) => n.nome === quem) || { nome: quem };
     return vozDoNpc(npc);
   }
@@ -270,21 +274,31 @@ export class Narrador {
     if (this.cfg.vozMotor === 'sistema' || this.semServico) return this.falarSistema(pedidos, vivo, velGlobal, ctx.idioma);
 
     const sintetizar = (p) => {
-      const v = PRESETS_VOZ[p.preset];
       return window.rpg.voz.falar({
-        texto: p.texto,
+        texto: p.texto.replace(/\[[^\]]{1,20}\]/g, ''),
         preset: p.preset,
-        npc: p.quem === 'narrador' ? null : p.quem,
-        slug: ctx.slug || null,
         idioma: ctx.idioma || 'pt',
         emocao: p.emocao || 'neutro',
-        velocidade: +(v.vel * velGlobal).toFixed(2),
+        velocidade: velGlobal, // o ritmo de cada personagem e da emoção é aplicado no processo principal
         lote,
       }).then((r) => r.dados.buffer.slice(r.dados.byteOffset, r.dados.byteOffset + r.dados.byteLength));
     };
     let i = 0;
     try {
       let proximo = sintetizar(pedidos[0]);
+      proximo.catch(() => {});
+      // 1ª vez: o modelo Kokoro (~320 MB) ainda está baixando/carregando → esta fala vai na voz do sistema,
+      // sem deixar o jogador esperando em silêncio; a carga continua por trás e a próxima fala já sai no Kokoro
+      const ESPERA = Symbol('espera');
+      const primeiro = await Promise.race([proximo, new Promise((r) => setTimeout(() => r(ESPERA), this.esperaCarga ?? 6000))]);
+      if (primeiro === ESPERA && ['baixando', 'iniciando'].includes(this.estado.status) && window.speechSynthesis) {
+        if (!vivo()) return;
+        window.rpg.voz.cancelar(lote).catch(() => {});
+        this.onAviso?.(this.estado.status === 'baixando'
+          ? 'Baixando a voz Kokoro pela 1ª vez (~320 MB). Enquanto isso, a narração usa a voz do sistema.'
+          : 'Carregando a voz Kokoro… esta narração vai na voz do sistema.');
+        return await this.falarSistema(pedidos, vivo, velGlobal, ctx.idioma);
+      }
       for (; i < pedidos.length; i++) {
         const dados = await proximo;
         if (!vivo()) return;
@@ -299,10 +313,14 @@ export class Narrador {
       }
     } catch (e) {
       if (!vivo() || e.cancelado) return;
-      // Chatterbox não instalado → usa a voz do sistema nesta sessão, sem travar o jogo
-      if (/instalad|Python|ENOENT/i.test(e.message) && window.speechSynthesis) {
-        this.semServico = true;
-        this.onAviso?.('A voz Chatterbox ainda não foi instalada: usando a voz do sistema. Veja ⚙️ Configurações → Voz.');
+      // Kokoro não instalado → voz do sistema nesta sessão; outra falha (serviço caiu, arquivo ruim) → só nesta narração.
+      // Em nenhum caso a narração para no meio.
+      const naoInstalado = /instalad|instale|compilad|dotnet|ENOENT|não achei/i.test(e.message);
+      if (naoInstalado) this.semServico = true;
+      if (window.speechSynthesis) {
+        this.onAviso?.(naoInstalado
+          ? 'A voz Kokoro ainda não foi instalada — por enquanto é a voz do sistema (robótica). Instale em ⚙️ Configurações → Voz → 📦 Instalar.'
+          : `A voz Kokoro falhou (${e.message.slice(0, 140)}). Esta narração continua na voz do sistema.`);
         return await this.falarSistema(pedidos.slice(i), vivo, velGlobal, ctx.idioma);
       }
       this.onErro?.(e);

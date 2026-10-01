@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Serviço de voz do Crônicas: KokoroSharp (Kokoro TTS 82M, ONNX, CPU). O app compila sozinho com o .NET 8 SDK. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AssemblyName>CronicasVoz</AssemblyName>
+    <RootNamespace>CronicasVoz</RootNamespace>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <SelfContained>false</SelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KokoroSharp.CPU" Version="0.8.*" />
+  </ItemGroup>
+
+  <!-- O KokoroSharp copia a pasta "voices" só no build; o publish (usado pelo Instalar) não leva. Copia junto. -->
+  <Target Name="CopiarVozesNoPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <VozesKokoro Include="$(OutDir)voices\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(VozesKokoro)" DestinationFiles="@(VozesKokoro->'$(PublishDir)voices\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

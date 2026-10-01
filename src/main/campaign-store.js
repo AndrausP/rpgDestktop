@@ -15,11 +15,48 @@ const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const { slugify, norm, exists, readJson, writeJson, listDirs, listFiles, clamp, toInt } = require('./util');
-const { ATRIBUTOS, NOME_ATRIBUTO, claudeMd, mod } = require('./gm-prompt');
+const { ATRIBUTOS, claudeMd, mod } = require('./gm-prompt');
 const { TEMA_PADRAO } = require('./catalogo');
+const memoria = require('./memoria');
+const eventos = require('./eventos');
+const diario = require('./diario');
+const { repararMensagemMestre } = require('./turno');
 
 const PASTAS_PADRAO = ['armas', 'armaduras', 'consumiveis', 'itens-chave', 'diversos'];
 const RARIDADES = ['comum', 'incomum', 'raro', 'epico', 'lendario', 'mitico'];
+
+const HEROI_PRINCIPAL = 'principal'; // o herói do host, na raiz da campanha
+
+/** Ficha inicial de um herói (criação de campanha e herói de convidado no co-op). */
+function montarPersonagem(dp = {}) {
+  const at = {};
+  for (const a of ATRIBUTOS) at[a] = clamp(toInt(dp.atributos?.[a], 10), 3, 20);
+  const con = mod(at.constituicao);
+  const intSab = Math.max(mod(at.inteligencia), mod(at.sabedoria), mod(at.carisma));
+  const vidaMax = Math.max(6, toInt(dp.vidaBase, 10) + con * 2);
+  const manaMax = Math.max(0, toInt(dp.manaBase, 4) + intSab * 2);
+  return {
+    nome: dp.nome || 'Aventureiro',
+    raca: dp.raca || 'Humano',
+    classe: dp.classe || 'Guerreiro',
+    icone: dp.icone || '⚔️',
+    retrato: dp.retrato || '',
+    retratoCustom: '',
+    aparencia: String(dp.aparencia || '').slice(0, 1500),
+    voz: dp.voz || '',
+    historia: dp.historia || '',
+    nivel: 1,
+    xp: 0,
+    xpProximo: 100,
+    vida: vidaMax,
+    vidaMax,
+    mana: manaMax,
+    manaMax,
+    ouro: toInt(dp.ouro, 15),
+    atributos: at,
+    status: [],
+  };
+}
 
 class CampaignStore {
   constructor(root) {
@@ -103,33 +140,7 @@ class CampaignStore {
       dia: 1,
       idioma: dados.idioma === 'en' ? 'en' : 'pt',
     };
-    const at = {};
-    for (const a of ATRIBUTOS) at[a] = clamp(toInt(dados.personagem?.atributos?.[a], 10), 3, 20);
-    const con = mod(at.constituicao);
-    const intSab = Math.max(mod(at.inteligencia), mod(at.sabedoria), mod(at.carisma));
-    const vidaMax = Math.max(6, toInt(dados.personagem?.vidaBase, 10) + con * 2);
-    const manaMax = Math.max(0, toInt(dados.personagem?.manaBase, 4) + intSab * 2);
-    const personagem = {
-      nome: dados.personagem?.nome || 'Aventureiro',
-      raca: dados.personagem?.raca || 'Humano',
-      classe: dados.personagem?.classe || 'Guerreiro',
-      icone: dados.personagem?.icone || '⚔️',
-      retrato: dados.personagem?.retrato || '',
-      retratoCustom: '',
-      aparencia: String(dados.personagem?.aparencia || '').slice(0, 1500),
-      voz: dados.personagem?.voz || '',
-      historia: dados.personagem?.historia || '',
-      nivel: 1,
-      xp: 0,
-      xpProximo: 100,
-      vida: vidaMax,
-      vidaMax,
-      mana: manaMax,
-      manaMax,
-      ouro: toInt(dados.personagem?.ouro, 15),
-      atributos: at,
-      status: [],
-    };
+    const personagem = montarPersonagem(dados.personagem || {});
     if (dados.personagem?.imagem) personagem.retratoCustom = await this.gravarImagemHeroi(d, dados.personagem.imagem);
     await this.w(path.join(d, 'campanha.json'), campanha);
     await this.w(path.join(d, 'personagem.json'), personagem);
@@ -173,9 +184,10 @@ class CampaignStore {
   }
 
   /** Muda retrato (imagem própria ou da galeria), aparência e voz do herói. */
-  async atualizarHeroi(slug, { imagem, retrato, aparencia, voz } = {}) {
+  async atualizarHeroi(slug, { imagem, retrato, aparencia, voz } = {}, heroi) {
     const d = this.dir(slug);
-    const f = path.join(d, 'personagem.json');
+    const f = path.join(this.dirHeroi(slug, heroi), 'personagem.json');
+    if (heroi && heroi !== HEROI_PRINCIPAL) imagem = null; // imagem própria só no PC do host (convidado usa a galeria)
     const p = await readJson(f);
     if (!p) throw new Error('Personagem não encontrado.');
     if (imagem) p.retratoCustom = await this.gravarImagemHeroi(d, imagem);
@@ -186,7 +198,7 @@ class CampaignStore {
     if (aparencia !== undefined) p.aparencia = String(aparencia).slice(0, 1500);
     if (voz !== undefined) p.voz = voz;
     await this.w(f, p);
-    await this.escreverLoreHeroi(d, p);
+    if (!heroi || heroi === HEROI_PRINCIPAL) await this.escreverLoreHeroi(d, p);
   }
 
   async excluir(slug, trashFn) {
@@ -195,17 +207,34 @@ class CampaignStore {
     else await fsp.rm(d, { recursive: true, force: true });
   }
 
-  async carregar(slug) {
-    const d = this.dir(slug);
-    const campanha = await readJson(path.join(d, 'campanha.json'));
-    if (!campanha) throw new Error(`Campanha "${slug}" não encontrada`);
-    const personagem = await readJson(path.join(d, 'personagem.json'), {});
-    personagem.atributos = personagem.atributos || {};
-    for (const a of ATRIBUTOS) personagem.atributos[a] = toInt(personagem.atributos[a], 10);
-    personagem.status = Array.isArray(personagem.status) ? personagem.status : [];
+  /** Posições da grade de combate (quadrados de cada criatura); null encerra o combate. */
+  async salvarCombate(slug, dados) {
+    const f = path.join(this.dir(slug), 'historia', 'combate.json');
+    this.marcar();
+    if (!dados) return fsp.rm(f, { force: true });
+    await writeJson(f, { mapa: String(dados.mapa || ''), turno: dados.turno ?? null, pos: Array.isArray(dados.pos) ? dados.pos.slice(0, 40) : [] });
+  }
 
+  // ───────────────────────── grupo (co-op) ─────────────────────────
+  // O herói principal (do host) mora na raiz da campanha: personagem.json + inventario/.
+  // Cada convidado tem herois/<id>/personagem.json + herois/<id>/inventario/ — mesma estrutura.
+
+  dirHeroi(slug, heroi) {
+    return !heroi || heroi === HEROI_PRINCIPAL ? this.dir(slug) : path.join(this.dir(slug), 'herois', slugify(heroi));
+  }
+
+  async lerFicha(slug, heroi) {
+    const p = (await readJson(path.join(this.dirHeroi(slug, heroi), 'personagem.json'), {})) || {};
+    p.atributos = p.atributos || {};
+    for (const a of ATRIBUTOS) p.atributos[a] = toInt(p.atributos[a], 10);
+    p.status = Array.isArray(p.status) ? p.status : [];
+    p.id = heroi && heroi !== HEROI_PRINCIPAL ? slugify(heroi) : HEROI_PRINCIPAL;
+    return p;
+  }
+
+  async lerInventario(slug, heroi) {
     const inventario = {};
-    const invDir = path.join(d, 'inventario');
+    const invDir = path.join(this.dirHeroi(slug, heroi), 'inventario');
     for (const pasta of await listDirs(invDir)) {
       inventario[pasta] = [];
       for (const f of await listFiles(path.join(invDir, pasta), '.json')) {
@@ -215,7 +244,68 @@ class CampaignStore {
       }
       inventario[pasta].sort((a, b) => (b.equipado ? 1 : 0) - (a.equipado ? 1 : 0) || a.nome.localeCompare(b.nome));
     }
+    return inventario;
+  }
 
+  /** Todos os heróis da campanha (resumo para a tela e para o mestre). O principal vem primeiro. */
+  async listarHerois(slug) {
+    const ids = [HEROI_PRINCIPAL, ...(await listDirs(path.join(this.dir(slug), 'herois')))];
+    const out = [];
+    for (const id of ids) {
+      const p = await this.lerFicha(slug, id);
+      if (!p.nome) continue;
+      out.push({ id, nome: p.nome, raca: p.raca, classe: p.classe, nivel: p.nivel, vida: p.vida, vidaMax: p.vidaMax, mana: p.mana, manaMax: p.manaMax,
+        icone: p.icone, retrato: p.retrato, retratoCustom: id === HEROI_PRINCIPAL ? p.retratoCustom : '', voz: p.voz, jogador: p.jogador || '', status: p.status });
+    }
+    return out;
+  }
+
+  /** Ficha + inventário de cada herói (vai para o prompt do mestre no co-op). */
+  async carregarGrupo(slug) {
+    const out = [];
+    for (const h of await this.listarHerois(slug)) out.push({ ...(await this.lerFicha(slug, h.id)), inventario: await this.lerInventario(slug, h.id) });
+    return out;
+  }
+
+  /** Cria o herói de um convidado (mesma regra de atributos/vida da criação de campanha). Devolve o id. */
+  async criarHeroi(slug, dados = {}) {
+    const p = montarPersonagem(dados);
+    if (!p.nome || p.nome === 'Aventureiro') throw new Error('Dê um nome ao herói.');
+    const grupo = await this.listarHerois(slug);
+    if (grupo.some((h) => norm(h.nome) === norm(p.nome))) throw new Error(`Já existe um herói chamado ${p.nome} nesta campanha.`);
+    let id = slugify(p.nome) || 'heroi';
+    if (id === HEROI_PRINCIPAL) id = `${id}-2`;
+    let n = 2;
+    while (await exists(this.dirHeroi(slug, id))) id = `${slugify(p.nome)}-${n++}`;
+    p.jogador = String(dados.jogador || '').slice(0, 40);
+    const d = this.dirHeroi(slug, id);
+    this.marcar();
+    for (const sub of PASTAS_PADRAO) await fsp.mkdir(path.join(d, 'inventario', sub), { recursive: true });
+    await this.w(path.join(d, 'personagem.json'), p);
+    for (const it of dados.itensIniciais || []) await this.ganharItem(slug, it, id);
+    return id;
+  }
+
+  /** Turno interrompido (app caiu no meio)? Volta tudo a como estava antes dele. Só com nenhum turno em curso. */
+  async recuperarTurno(slug) {
+    const desfez = await diario.recuperar(this.dir(slug));
+    if (desfez) this.marcar();
+    return desfez;
+  }
+
+  /**
+   * Estado da campanha visto por um herói (a ficha e o inventário são os dele; o resto é de todos).
+   * @param {string} slug
+   * @param {{heroi?: string}} [op] id do herói (padrão: o principal, do host)
+   */
+  async carregar(slug, { heroi } = {}) {
+    const d = this.dir(slug);
+    const campanha = await readJson(path.join(d, 'campanha.json'));
+    if (!campanha) throw new Error(`Campanha "${slug}" não encontrada`);
+    const idHeroi = heroi && heroi !== HEROI_PRINCIPAL && (await exists(this.dirHeroi(slug, heroi))) ? slugify(heroi) : HEROI_PRINCIPAL;
+    const personagem = await this.lerFicha(slug, idHeroi);
+    const inventario = await this.lerInventario(slug, idHeroi);
+    const grupo = await this.listarHerois(slug);
     const lerColecao = async (sub) => {
       const out = [];
       for (const f of await listFiles(path.join(d, sub), '.json')) {
@@ -229,13 +319,29 @@ class CampaignStore {
       slug: slugify(slug),
       pasta: d,
       campanha,
+      heroi: idHeroi,
       personagem,
       inventario,
+      grupo,
       missoes: await lerColecao('missoes'),
       npcs: await lerColecao('npcs'),
       lugares: await lerColecao('lugares'),
-      mensagens: (await readJson(path.join(d, 'historia', 'mensagens.json'), [])) || [],
+      // turnos antigos que ficaram com o JSON cru do mestre no texto aparecem só com a narração
+      mensagens: ((await readJson(path.join(d, 'historia', 'mensagens.json'), [])) || []).map(repararMensagemMestre),
+      enredo: await readJson(path.join(d, 'historia', 'enredo.json'), null),
+      combate: await readJson(path.join(d, 'historia', 'combate.json'), null),
+      memoria: { ...memoria.MEMORIA_VAZIA, ...((await readJson(path.join(d, 'historia', 'memoria.json'), {})) || {}) },
     };
+  }
+
+  // ───────────────────────── enredo e memória ─────────────────────────
+  // historia/enredo.json  → o rumo da história (criado pelo mestre no 1º turno, com segredos e atos)
+  // historia/memoria.json → o que NÃO pode ser esquecido: fatos canônicos, linha do tempo curta, resumo geral
+  // Vai em todo turno no lugar do histórico longo: gasta poucos tokens e segura a coerência.
+
+  /** Enredo + memória compacta (ver ./memoria.js). */
+  aplicarMemoria(slug, turno, info) {
+    return memoria.aplicarMemoria(this, slug, turno, info);
   }
 
   async lerLore(slug, limite = 12000) {
@@ -254,7 +360,7 @@ class CampaignStore {
     const d = this.dir(slug);
     const f = path.join(d, 'CLAUDE.md');
     const atual = (await exists(f)) ? await fsp.readFile(f, 'utf8') : null;
-    if (atual && atual.includes('<!-- cronicas:v4 -->')) return;
+    if (atual && atual.includes('<!-- cronicas:v9 -->')) return;
     const c = await readJson(path.join(d, 'campanha.json'));
     this.marcar();
     if (atual) await fsp.writeFile(path.join(d, 'CLAUDE.antigo.md'), atual, 'utf8'); // guarda sua versão
@@ -266,8 +372,8 @@ class CampaignStore {
     await this.w(path.join(this.dir(slug), 'campanha.json'), campanha);
   }
 
-  async salvarPersonagem(slug, p) {
-    await this.w(path.join(this.dir(slug), 'personagem.json'), p);
+  async salvarPersonagem(slug, p, heroi) {
+    await this.w(path.join(this.dirHeroi(slug, heroi), 'personagem.json'), p);
   }
 
   async adicionarMensagens(slug, novas) {
@@ -281,7 +387,7 @@ class CampaignStore {
     let md = '';
     for (const m of novas) {
       if (m.papel === 'mestre') md += `${m.capituloNovo ? `\n## ${m.capituloNovo}\n\n` : ''}${m.texto}\n\n`;
-      else if (m.papel === 'jogador') md += `> **Você:** ${m.texto}\n\n`;
+      else if (m.papel === 'jogador') md += `> **${m.autorNome || 'Você'}:** ${m.texto}\n\n`;
       else if (m.papel === 'sistema') md += `> 🎲 ${m.texto}\n\n`;
     }
     if (md) {
@@ -300,8 +406,8 @@ class CampaignStore {
 
   // ───────────────────────── inventário ─────────────────────────
 
-  async acharItemPorNome(slug, nome) {
-    const inv = path.join(this.dir(slug), 'inventario');
+  async acharItemPorNome(slug, nome, heroi) {
+    const inv = path.join(this.dirHeroi(slug, heroi), 'inventario');
     const alvo = norm(nome);
     for (const pasta of await listDirs(inv)) {
       for (const f of await listFiles(path.join(inv, pasta), '.json')) {
@@ -313,11 +419,11 @@ class CampaignStore {
     return null;
   }
 
-  async ganharItem(slug, dados) {
+  async ganharItem(slug, dados, heroi) {
     const nome = String(dados.nome || '').trim();
     if (!nome) return null;
     const qtd = Math.max(1, toInt(dados.quantidade, 1));
-    const ja = await this.acharItemPorNome(slug, nome);
+    const ja = await this.acharItemPorNome(slug, nome, heroi);
     if (ja) {
       ja.item.quantidade = toInt(ja.item.quantidade, 1) + qtd;
       if (dados.descricao && !ja.item.descricao) ja.item.descricao = dados.descricao;
@@ -334,7 +440,7 @@ class CampaignStore {
       icone: dados.icone ? String(dados.icone).slice(0, 8) : '',
       obtidoEm: new Date().toISOString(),
     };
-    const dir = path.join(this.dir(slug), 'inventario', pasta);
+    const dir = path.join(this.dirHeroi(slug, heroi), 'inventario', pasta);
     let base = slugify(nome);
     let file = path.join(dir, `${base}.json`);
     let n = 2;
@@ -343,8 +449,8 @@ class CampaignStore {
     return { ...item, pasta };
   }
 
-  async perderItem(slug, nome, quantidade) {
-    const ja = await this.acharItemPorNome(slug, nome);
+  async perderItem(slug, nome, quantidade, heroi) {
+    const ja = await this.acharItemPorNome(slug, nome, heroi);
     if (!ja) return null;
     const q = Math.max(1, toInt(quantidade, 1));
     const resto = toInt(ja.item.quantidade, 1) - q;
@@ -358,15 +464,15 @@ class CampaignStore {
     return { ...ja.item, restante: Math.max(0, resto) };
   }
 
-  itemFile(slug, id) {
+  itemFile(slug, id, heroi) {
     const [pasta, nome] = String(id).split('/');
-    return path.join(this.dir(slug), 'inventario', slugify(pasta), `${slugify(nome)}.json`);
+    return path.join(this.dirHeroi(slug, heroi), 'inventario', slugify(pasta), `${slugify(nome)}.json`);
   }
 
-  async moverItem(slug, id, destino) {
-    const de = this.itemFile(slug, id);
+  async moverItem(slug, id, destino, heroi) {
+    const de = this.itemFile(slug, id, heroi);
     const pastaDest = slugify(destino);
-    const dirDest = path.join(this.dir(slug), 'inventario', pastaDest);
+    const dirDest = path.join(this.dirHeroi(slug, heroi), 'inventario', pastaDest);
     await fsp.mkdir(dirDest, { recursive: true });
     let para = path.join(dirDest, path.basename(de));
     let n = 2;
@@ -375,26 +481,26 @@ class CampaignStore {
     await fsp.rename(de, para);
   }
 
-  async alternarEquipado(slug, id) {
-    const f = this.itemFile(slug, id);
+  async alternarEquipado(slug, id, heroi) {
+    const f = this.itemFile(slug, id, heroi);
     const it = await readJson(f);
     if (!it) return;
     it.equipado = !it.equipado;
     await this.w(f, it);
   }
 
-  async descartarItem(slug, id) {
+  async descartarItem(slug, id, heroi) {
     this.marcar();
-    await fsp.unlink(this.itemFile(slug, id));
+    await fsp.unlink(this.itemFile(slug, id, heroi));
   }
 
-  async criarPasta(slug, nome) {
+  async criarPasta(slug, nome, heroi) {
     this.marcar();
-    await fsp.mkdir(path.join(this.dir(slug), 'inventario', slugify(nome)), { recursive: true });
+    await fsp.mkdir(path.join(this.dirHeroi(slug, heroi), 'inventario', slugify(nome)), { recursive: true });
   }
 
-  async excluirPasta(slug, nome) {
-    const d = path.join(this.dir(slug), 'inventario', slugify(nome));
+  async excluirPasta(slug, nome, heroi) {
+    const d = path.join(this.dirHeroi(slug, heroi), 'inventario', slugify(nome));
     const arquivos = await listFiles(d, '.json');
     if (arquivos.length) throw new Error('A pasta precisa estar vazia');
     this.marcar();
@@ -402,6 +508,26 @@ class CampaignStore {
   }
 
   // ───────────────────────── coleções ─────────────────────────
+
+  /** Guarda um fato curto sobre um NPC/lugar (o que ele sabe, prometeu, esconde…). Máx. 8 por ficha. */
+  async anotar(slug, sub, nome, nota) {
+    const f = path.join(this.dir(slug), sub, `${slugify(nome)}.json`);
+    const x = await readJson(f);
+    if (!x) return;
+    const n = String(nota).trim().slice(0, 200);
+    if (!n) return;
+    // nota que repete outra (mesmas palavras, mais ou menos) substitui a antiga em vez de acumular
+    const palavras = (t) => new Set(norm(t).replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((w) => w.length > 3));
+    const nova = palavras(n);
+    const parecida = (o) => {
+      const v = palavras(o);
+      const comum = [...nova].filter((w) => v.has(w)).length;
+      return comum / Math.max(1, Math.min(nova.size, v.size)) >= 0.6;
+    };
+    const notas = (x.notas || []).filter((o) => norm(o) !== norm(n) && !parecida(o));
+    x.notas = [...notas, n].slice(-8);
+    await this.w(f, x);
+  }
 
   async upsertColecao(slug, sub, nome, campos, padroesSeNovo = {}) {
     const f = path.join(this.dir(slug), sub, `${slugify(nome)}.json`);
@@ -414,152 +540,14 @@ class CampaignStore {
     return { novo, existia: !!lido, antes: lido };
   }
 
-  // ───────────────────────── eventos do mestre ─────────────────────────
-
-  /** Passa um turno: status com duração diminuem. */
+  // ───────────────────────── eventos do mestre (ver ./eventos.js) ─────────────────────────
   tickStatus(p) {
-    const logs = [];
-    p.status = (p.status || []).filter((s) => {
-      if (!s.turnos) return true;
-      s.turnos -= 1;
-      if (s.turnos <= 0) {
-        logs.push({ tipo: 'status_remove', icone: '✨', texto: `${s.nome} passou` });
-        return false;
-      }
-      return true;
-    });
-    return logs;
+    return eventos.tickStatus(p);
   }
 
-  /** Aplica os eventos do mestre nas pastas e devolve o que mostrar ao jogador. */
-  async aplicarEventos(slug, eventos) {
-    const p = (await readJson(path.join(this.dir(slug), 'personagem.json'))) || {};
-    p.status = p.status || [];
-    const logs = [...this.tickStatus(p)];
-    const L = (tipo, icone, texto) => logs.push({ tipo, icone, texto });
-
-    for (const e of eventos || []) {
-      const v = toInt(e.valor, 0);
-      const motivo = e.motivo ? ` — ${e.motivo}` : '';
-      switch (e.tipo) {
-        case 'dano': {
-          const antes = p.vida;
-          p.vida = clamp(p.vida - Math.abs(v), 0, p.vidaMax);
-          L('dano', '💔', `−${antes - p.vida} vida${motivo}`);
-          if (p.vida === 0 && !p.status.some((s) => norm(s.nome) === 'caido')) {
-            p.status.push({ nome: 'Caído', descricao: 'À beira da morte', turnos: 0 });
-            L('morte', '☠️', `${p.nome} caiu!`);
-          }
-          break;
-        }
-        case 'cura': {
-          const antes = p.vida;
-          p.vida = clamp(p.vida + Math.abs(v), 0, p.vidaMax);
-          if (p.vida > 0) p.status = p.status.filter((s) => norm(s.nome) !== 'caido');
-          L('cura', '💚', p.vida - antes > 0 ? `+${p.vida - antes} vida${motivo}` : `Vida já está cheia${motivo}`);
-          break;
-        }
-        case 'mana': {
-          const antes = p.mana;
-          p.mana = clamp(p.mana + v, 0, p.manaMax);
-          const d = p.mana - antes;
-          L('mana', '🔷', `${d >= 0 ? '+' : ''}${d} mana${motivo}`);
-          break;
-        }
-        case 'ouro': {
-          const antes = p.ouro;
-          p.ouro = Math.max(0, p.ouro + v);
-          const d = p.ouro - antes;
-          L('ouro', '🪙', `${d >= 0 ? '+' : ''}${d} ouro${motivo}`);
-          break;
-        }
-        case 'xp': {
-          p.xp += Math.abs(v);
-          L('xp', '⭐', `+${Math.abs(v)} XP${motivo}`);
-          while (p.xp >= p.xpProximo) {
-            p.xp -= p.xpProximo;
-            p.nivel += 1;
-            p.xpProximo = Math.round(p.xpProximo * 1.5);
-            const ganhoVida = 5 + Math.max(0, mod(p.atributos.constituicao));
-            p.vidaMax += ganhoVida;
-            p.vida = p.vidaMax;
-            p.manaMax += 3;
-            p.mana = p.manaMax;
-            L('nivel', '🏆', `NÍVEL ${p.nivel}! +${ganhoVida} vida máx, +3 mana máx`);
-          }
-          break;
-        }
-        case 'atributo': {
-          if (!ATRIBUTOS.includes(e.atributo)) break;
-          p.atributos[e.atributo] = clamp(toInt(p.atributos[e.atributo], 10) + v, 1, 30);
-          L('atributo', '📈', `${NOME_ATRIBUTO[e.atributo]} ${v >= 0 ? '+' : ''}${v}${motivo}`);
-          break;
-        }
-        case 'status_add': {
-          if (!e.nome) break;
-          p.status = p.status.filter((s) => norm(s.nome) !== norm(e.nome));
-          const positivo = typeof e.positivo === 'boolean' ? e.positivo : !/envenen|sangr|atordo|exaust|congel|amaldi|ca[ií]do|medo|ferid|cego|lento|fraco|doen|queim|arrepi|paralis/i.test(e.nome);
-          p.status.push({ nome: e.nome, descricao: e.descricao || '', turnos: Math.max(0, toInt(e.turnos, 0)), positivo });
-          L('status_add', positivo ? '✨' : '🩸', `${e.nome}${e.turnos ? ` (${e.turnos} turnos)` : ''}`);
-          break;
-        }
-        case 'status_remove': {
-          const antes = p.status.length;
-          p.status = p.status.filter((s) => norm(s.nome) !== norm(e.nome));
-          if (p.status.length < antes) L('status_remove', '✨', `${e.nome} removido`);
-          break;
-        }
-        case 'item_ganho': {
-          const it = await this.ganharItem(slug, e);
-          if (it) L('item_ganho', '🎒', `${it.nome}${toInt(e.quantidade, 1) > 1 ? ` x${e.quantidade}` : ''} → ${it.pasta}/`);
-          break;
-        }
-        case 'item_perdido': {
-          const it = await this.perderItem(slug, e.nome, e.quantidade);
-          if (it) L('item_perdido', '🗑️', `${it.nome}${toInt(e.quantidade, 1) > 1 ? ` x${e.quantidade}` : ''} saiu do inventário`);
-          break;
-        }
-        case 'missao': {
-          if (!e.nome) break;
-          const { novo, existia } = await this.upsertColecao(slug, 'missoes', e.nome, {
-            descricao: e.descricao, estado: e.estado,
-          }, { estado: 'ativa' });
-          const icone = novo.estado === 'concluida' ? '✅' : novo.estado === 'falhou' ? '❌' : '📜';
-          const acao = !existia ? 'Nova missão' : novo.estado === 'concluida' ? 'Missão concluída' : novo.estado === 'falhou' ? 'Missão falhou' : 'Missão atualizada';
-          L('missao', icone, `${acao}: ${novo.nome}`);
-          break;
-        }
-        case 'npc': {
-          if (!e.nome) break;
-          const temVida = e.vida !== undefined && e.vida !== null;
-          const { novo, existia, antes } = await this.upsertColecao(slug, 'npcs', e.nome, {
-            descricao: e.descricao, relacao: e.relacao, retrato: e.retrato,
-            vidaMax: e.vidaMax !== undefined ? Math.max(1, toInt(e.vidaMax, 1)) : undefined,
-          }, { relacao: 'desconhecido' });
-          if (temVida) {
-            novo.vida = clamp(toInt(e.vida, 0), 0, novo.vidaMax || 9999);
-            if (!novo.vidaMax) novo.vidaMax = Math.max(1, novo.vida);
-            await this.w(path.join(this.dir(slug), 'npcs', `${slugify(e.nome)}.json`), novo);
-            const perdeu = (antes?.vida ?? novo.vidaMax) - novo.vida;
-            if (novo.vida === 0) L('npc_derrotado', '⚔️', `${e.nome} foi derrotado!`);
-            else if (perdeu > 0) L('npc_dano', '🗡️', `${e.nome} −${perdeu} (${novo.vida}/${novo.vidaMax})`);
-            else if (!existia) L('npc', '👹', `${e.nome} surge (${novo.vida}/${novo.vidaMax})`);
-          } else if (!existia || e.relacao) {
-            L('npc', '👤', `${existia ? 'NPC atualizado' : 'Conheceu'}: ${e.nome}${e.relacao ? ` (${e.relacao})` : ''}`);
-          }
-          break;
-        }
-        case 'lugar': {
-          if (!e.nome) break;
-          const { existia } = await this.upsertColecao(slug, 'lugares', e.nome, { descricao: e.descricao });
-          if (!existia) L('lugar', '🗺️', `Descobriu: ${e.nome}`);
-          break;
-        }
-      }
-    }
-    await this.salvarPersonagem(slug, p);
-    return logs;
+  aplicarEventos(slug, lista, op) {
+    return eventos.aplicarEventos(this, slug, lista, op);
   }
 }
 
-module.exports = { CampaignStore, PASTAS_PADRAO };
+module.exports = { CampaignStore, PASTAS_PADRAO, HEROI_PRINCIPAL, montarPersonagem };

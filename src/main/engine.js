@@ -4,6 +4,8 @@ const { slugify } = require('./util');
 const anthropic = require('./providers/anthropic');
 const claudeCode = require('./providers/claude-code');
 const demo = require('./providers/demo');
+const mapa = require('./mapa');
+const diario = require('./diario');
 
 const PROVEDORES = { api: anthropic, 'claude-code': claudeCode, demo };
 const emAndamento = new Map(); // slug → AbortController do turno em curso
@@ -19,6 +21,46 @@ function recapitulacao(mensagens, n = 14) {
     .join('\n\n');
 }
 
+// vida padrão de um inimigo cujo mestre esqueceu vida/vidaMax (por tamanho)
+const VIDA_PADRAO = { medio: 12, grande: 30, enorme: 70 };
+/**
+ * Combate (tema batalha) precisa de inimigo com vida para aparecer no mapa e receber dano.
+ * Completa a vida de hostis sem vida e, se ninguém hostil ficou em cena, põe quem o mestre colocou em foco
+ * (ou quem falou no roteiro e não é aliado) como hostil.
+ */
+function garantirInimigos(turno, state) {
+  if (turno.tema !== 'batalha') return;
+  const norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const herois = new Set((state.grupo || []).map((h) => norm(h.nome)));
+  const doEstado = (nome) => (state.npcs || []).find((n) => norm(n.nome) === norm(nome));
+  const eventosNpc = turno.eventos.filter((e) => e.tipo === 'npc' && e.nome);
+  const ganhaVida = (e, base) => {
+    if (e.vida != null || base?.vidaMax) return;
+    const v = VIDA_PADRAO[e.tamanho || base?.tamanho] || VIDA_PADRAO.medio;
+    e.vida = v;
+    e.vidaMax = v;
+  };
+  for (const e of eventosNpc) if ((e.relacao || doEstado(e.nome)?.relacao) === 'hostil') ganhaVida(e, doEstado(e.nome));
+  const temInimigo = eventosNpc.some((e) => (e.relacao || doEstado(e.nome)?.relacao) === 'hostil' && (e.vida == null || e.vida > 0))
+    || (state.npcs || []).some((n) => n.relacao === 'hostil' && n.vidaMax && n.vida > 0 && !eventosNpc.some((e) => norm(e.nome) === norm(n.nome) && e.relacao && e.relacao !== 'hostil'));
+  if (temInimigo) return;
+  const candidatos = [turno.falante || state.campanha.falante, ...(turno.roteiro || []).map((r) => r.quem)]
+    .filter((q) => q && q !== 'narrador' && !/^heroi/.test(q) && !herois.has(norm(q)));
+  const vistos = new Set();
+  for (const nome of candidatos) {
+    if (vistos.has(norm(nome)) || vistos.size >= 3) continue;
+    vistos.add(norm(nome));
+    const base = doEstado(nome);
+    const ev = eventosNpc.find((e) => norm(e.nome) === norm(nome));
+    if ((ev?.relacao || base?.relacao) === 'aliado' || (base?.vidaMax && base.vida <= 0)) continue;
+    if (ev) { ev.relacao = 'hostil'; ganhaVida(ev, base); } else {
+      const e = { tipo: 'npc', nome, relacao: 'hostil' };
+      ganhaVida(e, base);
+      turno.eventos.push(e);
+    }
+  }
+}
+
 class Engine {
   constructor(store, getSettings, getCatalogo) {
     this.store = store;
@@ -28,7 +70,9 @@ class Engine {
 
   /**
    * @param {string} slug
-   * @param {{texto?: string, papel?: 'jogador'|'sistema', inicio?: boolean, repetir?: boolean}} op
+   * @param {{texto?: string, papel?: 'jogador'|'sistema', autor?: string, inicio?: boolean, repetir?: boolean,
+   *   acoes?: {heroi: string, texto: string, papel?: 'jogador'|'sistema'}[]}} op
+   *   acoes = rodada do co-op (uma por herói); autor = herói de uma ação avulsa
    */
   async jogar(slug, op = {}) {
     if (emAndamento.has(slug)) throw new Error('O mestre ainda está narrando o turno anterior.');
@@ -36,27 +80,49 @@ class Engine {
     const signal = ctrl.signal;
     emAndamento.set(slug, ctrl);
     const checar = () => { if (signal.aborted) throw new Cancelado(); };
-    let adicionou = false;
+    let adicionou = 0; // quantas mensagens desta chamada entraram (desfeitas se o turno for cancelado)
+    let aplicando = false;
     try {
       const settings = await this.getSettings();
       const provedor = PROVEDORES[settings.provedor] || demo;
+      await this.store.recuperarTurno(slug); // sobrou um turno pela metade de uma sessão anterior?
 
       if (op.inicio) {
-        await this.store.adicionarMensagens(slug, [{ papel: 'sistema', texto: 'A aventura começa. Apresente a cena de abertura, o gancho inicial e uma primeira missão.' }]);
-        adicionou = true;
-      } else if (op.texto && !op.repetir) {
-        await this.store.adicionarMensagens(slug, [{ papel: op.papel === 'sistema' ? 'sistema' : 'jogador', texto: String(op.texto).slice(0, 4000) }]);
-        adicionou = true;
+        await this.store.adicionarMensagens(slug, [{ papel: 'sistema', texto: 'A aventura começa. Planeje o enredo da história inteira (campo enredo) e apresente a cena de abertura, o gancho inicial e uma primeira missão ligada ao ato 1.' }]);
+        adicionou = 1;
+      } else if (!op.repetir && (op.acoes?.length || op.texto)) {
+        const grupoAntes = await this.store.listarHerois(slug);
+        const nomeDe = (id) => grupoAntes.find((h) => h.id === id)?.nome;
+        const lista = op.acoes?.length ? op.acoes : [{ heroi: op.autor, texto: op.texto, papel: op.papel }];
+        await this.store.adicionarMensagens(slug, lista.filter((a) => String(a.texto || '').trim()).map((a) => ({
+          papel: a.papel === 'sistema' ? 'sistema' : 'jogador',
+          texto: String(a.texto).slice(0, 4000),
+          ...(a.heroi && nomeDe(a.heroi) ? { autor: a.heroi, autorNome: nomeDe(a.heroi) } : {}),
+        })));
+        adicionou = lista.length;
       }
 
       const state = await this.store.carregar(slug);
       const msgs = state.mensagens;
-      const ultima = msgs[msgs.length - 1];
-      if (!ultima || ultima.papel === 'mestre') throw new Error('Nada para o mestre responder.');
-      const historico = msgs.slice(0, -1);
-      const acao = ultima.papel === 'sistema' ? `[${ultima.texto}]` : ultima.texto;
+      // o que o mestre ainda não respondeu: as mensagens depois da última fala dele (uma por herói, no co-op)
+      let k = msgs.length;
+      while (k > 0 && msgs[k - 1].papel !== 'mestre') k--;
+      const pendentes = msgs.slice(k);
+      if (!pendentes.length) throw new Error('Nada para o mestre responder.');
+      const historico = msgs.slice(0, k);
+      const emGrupo = state.grupo.length > 1;
+      if (emGrupo) state.grupoCompleto = await this.store.carregarGrupo(slug);
+      const linha = (m) => (m.papel === 'sistema' ? `[${m.texto}]` : m.texto);
+      const acao = emGrupo
+        ? pendentes.map((m) => `- ${m.autorNome || state.grupo[0].nome}: ${linha(m)}`).join('\n')
+        : pendentes.map(linha).join('\n');
+      const autores = [...new Set(pendentes.map((m) => m.autor).filter(Boolean))];
       const cat = this.getCatalogo ? await this.getCatalogo(slug) : null;
-      const atual = gm.mensagemTurno(state, acao, settings.provedor === 'claude-code' ? cat : null);
+      // Claude Code: a lista de artes só vai quando a sessão é nova (ou a cada 15 turnos) — ele lembra do resto
+      const turnoN = state.campanha.turno || 0;
+      const mandarArtes = settings.provedor === 'claude-code' && (!state.campanha.claudeSessionId || turnoN % 15 === 0);
+      const atual = gm.mensagemTurno(state, acao, mandarArtes ? cat : null);
+      const atualComArtes = settings.provedor === 'claude-code' && !mandarArtes ? gm.mensagemTurno(state, acao, cat) : atual;
 
       let bruto;
       let meta = {};
@@ -65,13 +131,23 @@ class Engine {
         const sid = state.campanha.claudeSessionId;
         const lembrete = '\n\nResponda apenas com o JSON do turno, conforme o CLAUDE.md.';
         // sessão nova (ou perdida) recebe uma recapitulação; sessão retomada já lembra de tudo
-        const promptNovo = `${historico.length ? `[RECAPITULAÇÃO DA HISTÓRIA ATÉ AQUI]\n${recapitulacao(historico)}\n\n` : ''}${atual}${lembrete}`;
+        // sessão nova: a memória compacta + as últimas mensagens bastam (sem reenviar a história inteira)
+        const promptNovo = `${historico.length ? `[ÚLTIMAS MENSAGENS]\n${recapitulacao(historico, 8)}\n\n` : ''}${atualComArtes}${lembrete}`;
         const r = await claudeCode.turno({ settings, cwd: state.pasta, prompt: atual + lembrete, promptNovo, sessionId: sid, signal });
         bruto = gm.extrairJson(r.texto);
         meta = { sessionId: r.sessionId, custo: r.custo };
+        if (bruto._invalido) {
+          // JSON quebrado e sem nada aproveitável: pede de novo na mesma sessão, uma vez
+          checar();
+          const r2 = await claudeCode.turno({ settings, cwd: state.pasta, prompt: 'Sua resposta anterior não era um JSON válido e não pôde ser lida. Reenvie a MESMA resposta como um único objeto JSON válido (aspas internas escapadas com \\", sem quebras de linha cruas dentro dos textos, sem texto fora do JSON).', promptNovo: promptNovo, sessionId: r.sessionId || sid, signal });
+          bruto = gm.extrairJson(r2.texto);
+          meta = { sessionId: r2.sessionId || r.sessionId, custo: (r.custo || 0) + (r2.custo || 0) };
+          if (bruto._invalido) throw new Error('O mestre respondeu num formato que não deu para ler. Clique em "Tentar de novo".');
+        }
       } else if (settings.provedor === 'api') {
         const lore = await this.store.lerLore(slug);
-        const r = await anthropic.turno({ settings, systemPrompt: gm.systemPromptApi(state.campanha, lore, cat), historico, atual, tool: gm.montarTool(cat || undefined), signal });
+        // histórico curto: o enredo e a memória (no 'atual') carregam o passado com poucos tokens
+        const r = await anthropic.turno({ settings, systemPrompt: gm.systemPromptApi(state.campanha, lore, cat), historico: historico.slice(-10), atual, tool: gm.montarTool(cat || undefined), signal });
         bruto = r.turno;
         meta = { uso: r.uso };
       } else {
@@ -81,7 +157,8 @@ class Engine {
       // saiu da tela no meio do turno: nada é aplicado
       checar();
 
-      const turno = gm.normalizarTurno(bruto, state.campanha.tema, cat);
+      const turno = gm.normalizarTurno(bruto, state.campanha.tema, cat, { heroi: state.personagem?.nome, herois: state.grupo.map((h) => h.nome) });
+      garantirInimigos(turno, state);
       // itens com arte: completa o que o mestre não informou (raridade, pasta, descrição, ícone)
       for (const e of turno.eventos) {
         if (e.tipo !== 'item_ganho' || !cat?.itens) continue;
@@ -96,11 +173,16 @@ class Engine {
       const conhecidos = new Set([...(state.npcs || []).map((n) => slugify(n.nome)), ...turno.eventos.filter((e) => e.tipo === 'npc').map((e) => slugify(e.nome))]);
       for (const r of turno.roteiro || []) {
         const id = slugify(r.quem);
-        if (r.quem === 'narrador' || r.quem === 'heroi' || conhecidos.has(id) || slugify(state.personagem.nome) === id) continue;
+        if (r.quem === 'narrador' || r.quem === 'heroi' || r.quem.startsWith('heroi:') || conhecidos.has(id) || state.grupo.some((h) => slugify(h.nome) === id)) continue;
         conhecidos.add(id);
         turno.eventos.push({ tipo: 'npc', nome: r.quem, relacao: 'desconhecido' });
       }
-      const logs = await this.store.aplicarEventos(slug, turno.eventos);
+      // daqui até a mensagem do mestre é "tudo ou nada" (diário do turno)
+      this.store.marcar();
+      await diario.iniciar(state.pasta, { turno: (state.campanha.turno || 0) + 1 });
+      aplicando = true;
+      const logs = await this.store.aplicarEventos(slug, turno.eventos, { padrao: autores.length === 1 ? autores[0] : undefined });
+      await this.store.aplicarMemoria(slug, turno, { numero: (state.campanha.turno || 0) + 1, dia: turno.dia || state.campanha.dia });
 
       const campanha = state.campanha;
       const temaMudou = turno.tema !== campanha.tema;
@@ -112,6 +194,12 @@ class Engine {
       else if (temaMudou && cat?.temaPadrao?.[turno.tema]) campanha.cena = cat.temaPadrao[turno.tema];
       if (turno.falante !== null) campanha.falante = turno.falante;
       if (turno.local) campanha.local = turno.local;
+      // posição no mapa-múndi: só aceita um local que existe (pelo nome ou id); guarda os visitados
+      const noMapa = mapa.acharLocal(turno.local_mapa) || (!turno.local_mapa && turno.local ? mapa.acharLocal(turno.local) : null);
+      if (noMapa) {
+        campanha.mapaLocal = noMapa.id;
+        campanha.mapaVisitados = [...new Set([...(campanha.mapaVisitados || []), noMapa.id])];
+      }
       if (turno.periodo) campanha.periodo = turno.periodo;
       if (turno.dia) campanha.dia = turno.dia;
       // inimigo derrotado sai de cena no turno seguinte
@@ -134,12 +222,16 @@ class Engine {
         rolagem: turno.rolagem,
         sugestoes: turno.sugestoes,
       }]);
+      await diario.concluir(state.pasta);
+      aplicando = false;
 
       return { state: await this.store.carregar(slug), turno, logs, temaMudou, cenaMudou, capituloNovo, meta };
     } catch (e) {
+      // erro no meio da aplicação: desfaz o turno inteiro (a ação do jogador fica, para "Tentar de novo")
+      if (aplicando) await this.store.recuperarTurno(slug).catch(() => {});
       if (signal.aborted) {
         // desfaz a ação que ninguém respondeu, para a campanha voltar exatamente como estava
-        if (adicionou) await this.store.removerUltimaMensagem(slug).catch(() => {});
+        for (let i = 0; i < adicionou; i++) await this.store.removerUltimaMensagem(slug).catch(() => {});
         throw new Cancelado();
       }
       throw e;

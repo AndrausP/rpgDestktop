@@ -6,8 +6,13 @@ const settings = require('./src/main/settings');
 const { CampaignStore } = require('./src/main/campaign-store');
 const { Engine } = require('./src/main/engine');
 const catalogo = require('./src/main/catalogo');
+const mapa = require('./src/main/mapa');
 const { Voz } = require('./src/main/voz');
+const { Sala } = require('./src/main/coop/servidor');
+const { Cliente } = require('./src/main/coop/cliente');
 let voz;
+let sala = null; // co-op: a sala que este PC hospeda
+const cliente = new Cliente((ev) => win?.webContents.send('coop:evento', ev)); // co-op: a sala em que este PC é convidado
 
 // pasta de dados fixa (%APPDATA%/Crônicas no Windows) — o instalador da voz (npm run voz:instalar) usa a mesma
 app.setPath('userData', path.join(app.getPath('appData'), 'Crônicas'));
@@ -31,14 +36,16 @@ async function init() {
     dirDados: path.join(app.getPath('userData'), 'voz'),
     dirApp: __dirname,
     dirRecursos: process.resourcesPath,
-    getRaiz: () => store.root,
-    dirCampanha: (slug) => store.dir(slug),
     avisar: (ev) => win?.webContents.send('voz:evento', ev),
   });
   protocol.handle('arte', async (req) => {
     const u = new URL(req.url);
     const arquivo = u.host === 'voz' ? voz.arquivoCache(u.pathname.replace(/^\/+/, '')) : catalogo.resolverUrl(req.url, store.root);
-    if (!arquivo || !fs.existsSync(arquivo)) return new Response('não encontrado', { status: 404 });
+    if (!arquivo || !fs.existsSync(arquivo)) {
+      // convidado: artes da campanha e retratos enviados ficam no PC do host
+      if (cliente.ativo && (u.host === 'campanha' || u.host === 'usuario')) return cliente.arte(req.url).catch(() => new Response('', { status: 404 }));
+      return new Response('não encontrado', { status: 404 });
+    }
     return net.fetch(pathToFileURL(arquivo).toString());
   });
 }
@@ -63,13 +70,19 @@ function criarJanela() {
     },
   });
   Menu.setApplicationMenu(null);
-  // microfone só para gravar a voz de um personagem (Configurações → Voz → 🎙️); nada além disso
-  const ses = win.webContents.session;
-  ses.setPermissionRequestHandler((_wc, permissao, cb, detalhes) => {
-    cb(permissao === 'media' && (detalhes?.mediaTypes || ['audio']).every((t) => t === 'audio'));
-  });
-  ses.setPermissionCheckHandler((_wc, permissao) => permissao === 'media');
-  const avisarMax = () => win.webContents.send('janela:maximizada', win.isMaximized());
+  // Windows: janela sem moldura maximizada pode passar das bordas da tela (a barra ficava cortada em cima);
+  // manda à tela quanto sobrou para fora, para a barra compensar
+  const avisarMax = () => {
+    const max = win.isMaximized();
+    let folga = 0;
+    if (max && process.platform === 'win32') {
+      const { screen } = require('electron');
+      const area = screen.getDisplayMatching(win.getBounds()).workArea;
+      folga = Math.max(0, area.y - win.getBounds().y, win.getContentBounds().y < area.y ? area.y - win.getContentBounds().y : 0);
+    }
+    win.webContents.send('janela:maximizada', max, folga);
+  };
+  win.webContents.on('did-finish-load', avisarMax);
   win.on('maximize', avisarMax);
   win.on('unmaximize', avisarMax);
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
@@ -88,7 +101,7 @@ function observar(slug) {
   if (!slug) return;
   try {
     watcher = fs.watch(store.dir(slug), { recursive: true }, (_ev, arquivo) => {
-      if (!arquivo || /\.tmp$/.test(arquivo)) return;
+      if (!arquivo || /\.tmp$|turno-backup|turno-pendente/.test(arquivo)) return;
       if (Date.now() - store.ultimaEscrita < 1500) return; // escrita do próprio app
       clearTimeout(watchDebounce);
       watchDebounce = setTimeout(async () => {
@@ -114,6 +127,11 @@ const handle = (canal, fn) =>
     }
   });
 
+// Convidado de uma sala co-op: os pedidos sobre a campanha vão para o host (o slug é o da campanha dele)
+const remoto = (canal, fn) => handle(canal, (...args) => (cliente.ativo && args[0] === cliente.slug ? cliente.chamar(canal, args.slice(1)) : fn(...args)));
+// Host: com a sala aberta, as jogadas entram na rodada do grupo (o resultado chega pelo evento coop:evento)
+const naSala = (slug) => sala && sala.slug === slug;
+
 handle('config:ler', () => settings.carregar());
 handle('config:salvar', async (novo) => {
   const cfg = await settings.salvar(novo);
@@ -125,14 +143,16 @@ handle('config:escolherPasta', async () => {
   return r.canceled ? null : r.filePaths[0];
 });
 handle('mestre:testar', () => engine.testar());
-handle('catalogo:ler', async (slug) => catalogo.comUrls(await catalogo.montar(store.root, slug ? store.dir(slug) : null), slug));
+remoto('catalogo:ler', async (slug) => catalogo.comUrls(await catalogo.montar(store.root, slug ? store.dir(slug) : null), slug));
+handle('mapa:ler', () => mapa.paraTela());
+handle('mapa:rota', (de, para) => ({ ...mapa.rota(de, para), texto: mapa.descreverRota(de, para) }));
 handle('artes:abrirPasta', () => shell.openPath(path.join(store.root, '_artes')));
 handle('janela:minimizar', () => win.minimize());
 handle('janela:maximizar', () => (win.isMaximized() ? win.unmaximize() : win.maximize(), win.isMaximized()));
 handle('janela:fechar', () => win.close());
 handle('janela:plataforma', () => process.platform);
 
-// voz (Chatterbox)
+// voz (KokoroSharp)
 handle('voz:estado', () => voz.info());
 handle('voz:iniciar', () => voz.iniciar());
 handle('voz:instalar', () => voz.instalar());
@@ -145,23 +165,7 @@ handle('voz:falar', async (pedido) => {
 handle('voz:cancelar', (lote) => voz.cancelar(lote));
 handle('voz:parar', () => voz.parar());
 handle('voz:vozes', () => voz.listarVozes());
-handle('voz:salvarRef', (id, dados, slug) => voz.salvarReferencia({ id, slug, dados, ext: '.wav' }));
-handle('voz:removerRef', (id, slug) => voz.removerReferencia({ id, slug }));
-handle('voz:importarRef', async (id, slug) => {
-  const r = await dialog.showOpenDialog(win, {
-    title: 'Escolha uma gravação de voz (10 a 20 segundos, uma pessoa falando, sem música)',
-    filters: [{ name: 'Áudio', extensions: ['wav', 'flac', 'mp3', 'ogg'] }],
-    properties: ['openFile'],
-  });
-  if (r.canceled || !r.filePaths[0]) return null;
-  return voz.importarReferencia({ id, slug, origem: r.filePaths[0] });
-});
-handle('voz:abrirPasta', async () => {
-  const d = voz.pastaVozesUsuario();
-  await fs.promises.mkdir(d, { recursive: true });
-  return shell.openPath(d);
-});
-handle('npc:definirVoz', async (slug, npcId, presetVoz) => {
+remoto('npc:definirVoz', async (slug, npcId, presetVoz) => {
   const f = path.join(store.dir(slug), 'npcs', `${npcId}.json`);
   const npc = JSON.parse(fs.readFileSync(f, 'utf8'));
   if (presetVoz) npc.voz = presetVoz;
@@ -171,32 +175,64 @@ handle('npc:definirVoz', async (slug, npcId, presetVoz) => {
   return store.carregar(slug);
 });
 
-handle('personagem:atualizar', async (slug, dados) => (await store.atualizarHeroi(slug, dados), store.carregar(slug)));
+remoto('personagem:atualizar', async (slug, dados) => {
+  await store.atualizarHeroi(slug, dados);
+  if (naSala(slug)) sala.avisarGrupo();
+  return store.carregar(slug);
+});
 handle('campanhas:listar', () => store.listar());
 handle('campanhas:criar', (dados) => store.criar(dados));
-handle('campanhas:carregar', async (slug) => {
+remoto('campanhas:carregar', async (slug) => {
+  if (!engine.emCurso(slug)) await store.recuperarTurno(slug);
   const s = await store.carregar(slug);
   observar(slug);
   return s;
 });
 handle('campanhas:fechar', () => observar(null));
 handle('campanhas:excluir', (slug) => store.excluir(slug, (d) => shell.trashItem(d)));
-handle('campanhas:abrirPasta', (slug, sub) => shell.openPath(slug ? path.join(store.dir(slug), sub || '') : store.root));
+handle('campanhas:abrirPasta', (slug, sub) => {
+  if (cliente.ativo && slug === cliente.slug) throw new Error('A pasta da campanha fica no computador do host.');
+  return shell.openPath(slug ? path.join(store.dir(slug), sub || '') : store.root);
+});
 
-handle('jogo:cancelar', (slug) => engine.cancelar(slug));
-handle('jogo:iniciar', (slug) => engine.jogar(slug, { inicio: true }));
-handle('jogo:acao', (slug, texto, papel) => engine.jogar(slug, { texto, papel }));
-handle('jogo:repetir', (slug) => engine.jogar(slug, { repetir: true }));
-handle('jogo:desfazerUltima', async (slug) => {
+remoto('combate:salvar', async (slug, dados) => {
+  await store.salvarCombate(slug, dados);
+  if (naSala(slug)) sala.avisarCombate(dados || null);
+});
+remoto('jogo:cancelar', (slug) => engine.cancelar(slug));
+remoto('jogo:iniciar', (slug) => (naSala(slug) ? sala.executar({ inicio: true }) : engine.jogar(slug, { inicio: true })));
+remoto('jogo:acao', (slug, texto, papel) => (naSala(slug) ? sala.acao('principal', texto, papel) : engine.jogar(slug, { texto, papel })));
+remoto('jogo:repetir', (slug) => (naSala(slug) ? sala.executar({ repetir: true }) : engine.jogar(slug, { repetir: true })));
+remoto('jogo:desfazerUltima', async (slug) => {
+  if (naSala(slug) && (sala.resolvendo || sala.acoes.size)) throw new Error('Espere a rodada do grupo terminar.');
   await store.removerUltimaMensagem(slug);
   return store.carregar(slug);
 });
 
-handle('inventario:mover', async (slug, id, destino) => (await store.moverItem(slug, id, destino), store.carregar(slug)));
-handle('inventario:equipar', async (slug, id) => (await store.alternarEquipado(slug, id), store.carregar(slug)));
-handle('inventario:descartar', async (slug, id) => (await store.descartarItem(slug, id), store.carregar(slug)));
-handle('inventario:criarPasta', async (slug, nome) => (await store.criarPasta(slug, nome), store.carregar(slug)));
-handle('inventario:excluirPasta', async (slug, nome) => (await store.excluirPasta(slug, nome), store.carregar(slug)));
+remoto('inventario:mover', async (slug, id, destino) => (await store.moverItem(slug, id, destino), store.carregar(slug)));
+remoto('inventario:equipar', async (slug, id) => (await store.alternarEquipado(slug, id), store.carregar(slug)));
+remoto('inventario:descartar', async (slug, id) => (await store.descartarItem(slug, id), store.carregar(slug)));
+remoto('inventario:criarPasta', async (slug, nome) => (await store.criarPasta(slug, nome), store.carregar(slug)));
+remoto('inventario:excluirPasta', async (slug, nome) => (await store.excluirPasta(slug, nome), store.carregar(slug)));
+
+// co-op
+handle('coop:hospedar', async (slug, nome) => {
+  sala?.fechar();
+  sala = new Sala({ store, engine, slug, nomeHost: nome, avisarHost: (ev) => win?.webContents.send('coop:evento', ev) });
+  try {
+    return await sala.abrir();
+  } catch (e) {
+    sala = null;
+    throw e;
+  }
+});
+handle('coop:info', () => sala?.info() || (cliente.ativo ? { convidado: true, rodada: cliente.ultimaRodada || null } : null));
+handle('coop:parar', () => { sala?.fechar(); sala = null; return true; });
+handle('coop:resolver', () => sala?.resolver() || null);
+handle('coop:conectar', (dados) => cliente.conectar(dados || {}));
+handle('coop:escolherHeroi', (heroi) => cliente.escolherHeroi(heroi));
+handle('coop:criarHeroi', (dados) => cliente.criarHeroi(dados));
+handle('coop:sair', () => (cliente.sair(), true));
 
 app.whenReady().then(async () => {
   await init();
@@ -208,6 +244,8 @@ app.whenReady().then(async () => {
 
 app.on('before-quit', () => {
   engine?.cancelar(null); // derruba turnos em curso (processo do Claude Code incluído)
+  sala?.fechar();
+  cliente.sair();
   voz?.parar();
 });
 

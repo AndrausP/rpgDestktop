@@ -2,6 +2,7 @@
 // o CLAUDE.md de lá vira as regras do mestre e ele pode ler lore/, npcs/, historia/...
 // A sessão é retomada com --resume, então o Claude Code mantém a memória da campanha.
 const { spawn } = require('child_process');
+const crypto = require('crypto');
 
 function matar(proc) {
   if (!proc || proc.exitCode != null) return;
@@ -77,9 +78,12 @@ async function turno({ settings, cwd, prompt, promptNovo, sessionId, signal = nu
   const base = ['-p', '--output-format', 'json', '--allowedTools', 'Read,Glob,Grep'];
   if (settings.claudeModelo) base.push('--model', settings.claudeModelo);
 
-  const rodar = async (sid) => {
-    const args = sid ? [...base, '--resume', sid] : base;
+  const rodar = async (sid, comId = true) => {
+    // sessão nova com id próprio: o app sabe de antemão qual sessão é dele (versões antigas do CLI ignoram → sem a flag)
+    const novoId = !sid && comId ? crypto.randomUUID() : null;
+    const args = sid ? [...base, '--resume', sid] : novoId ? [...base, '--session-id', novoId] : base;
     const r = await executar(settings, args, { cwd, stdin: sid ? prompt : promptNovo || prompt, signal });
+    if (novoId && r.code !== 0 && /unknown option|session-id/i.test(r.err || '')) return rodar(null, false);
     const j = parseResultado(r.out);
     if (!j) {
       const msg = (r.err || r.out || '').trim().slice(0, 400);
@@ -92,7 +96,7 @@ async function turno({ settings, cwd, prompt, promptNovo, sessionId, signal = nu
       e.resumeFalhou = !!sid;
       throw e;
     }
-    return { texto: j.result, sessionId: j.session_id, custo: j.total_cost_usd };
+    return { texto: j.result, sessionId: novoId || j.session_id, custo: j.total_cost_usd };
   };
 
   try {

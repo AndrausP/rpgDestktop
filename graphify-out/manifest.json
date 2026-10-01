@@ -1,0 +1,1952 @@
+{
+  "iniciar.sh": {
+    "mtime": 1790729441.0188055,
+    "ast_hash": "447ed4200aadd6dd780e62b43ed42454",
+    "semantic_hash": ""
+  },
+  "main.js": {
+    "mtime": 1790871558.6424239,
+    "ast_hash": "2c727fea26e2a65f6f76f003c3b0378e",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1790790868.0415092,
+    "ast_hash": "12436ae94e1f35ce95644e6797e499c7",
+    "semantic_hash": ""
+  },
+  "preload.js": {
+    "mtime": 1790871559.0533328,
+    "ast_hash": "57dbf00815b790e34771b34107267149",
+    "semantic_hash": ""
+  },
+  "renderer/js/app.js": {
+    "mtime": 1790729441.159822,
+    "ast_hash": "5fa271fb67eef708cbb098e7cca05228",
+    "semantic_hash": ""
+  },
+  "renderer/js/arte.js": {
+    "mtime": 1790858699.034278,
+    "ast_hash": "fc22c4c092ece033692539ee7944f559",
+    "semantic_hash": ""
+  },
+  "renderer/js/audio.js": {
+    "mtime": 1790790871.5356297,
+    "ast_hash": "89003d8d0c3575fe31e7d8d0e4208e07",
+    "semantic_hash": ""
+  },
+  "renderer/js/barra.js": {
+    "mtime": 1790871560.1458833,
+    "ast_hash": "83ad2e2183db8e60e00e2b6b24a902c1",
+    "semantic_hash": ""
+  },
+  "renderer/js/cenario.js": {
+    "mtime": 1790729441.1608217,
+    "ast_hash": "6bb9845437a42dfd38a165a379601362",
+    "semantic_hash": ""
+  },
+  "renderer/js/coop.js": {
+    "mtime": 1790859406.5939448,
+    "ast_hash": "9348fb57b55ae63be16c4b1200d7ca48",
+    "semantic_hash": ""
+  },
+  "renderer/js/grade.js": {
+    "mtime": 1790859400.005314,
+    "ast_hash": "9669609a9acd7a82d523520dbd4a1881",
+    "semantic_hash": ""
+  },
+  "renderer/js/heroi.js": {
+    "mtime": 1790790871.9688592,
+    "ast_hash": "3ff31338012fb795654f97e59bfdbde2",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/arena.js": {
+    "mtime": 1790881167.5274456,
+    "ast_hash": "18853f92e48cc8e77a2b51f0c12bb3ef",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/contexto.js": {
+    "mtime": 1790859401.597888,
+    "ast_hash": "c1699715bd146ff088f81b7d1be1227a",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/historico.js": {
+    "mtime": 1790859401.986423,
+    "ast_hash": "fce12d3ea1c6e710bb79fad45b96bbdd",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/lateral.js": {
+    "mtime": 1790859397.8854046,
+    "ast_hash": "43589c32cb87b1fea96d008f668990f2",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/mapa.js": {
+    "mtime": 1790859407.2145998,
+    "ast_hash": "54e0caf596d736efd21b391dd8d0eb69",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/narracao.js": {
+    "mtime": 1790859402.426062,
+    "ast_hash": "e492a1f51201a0415b57e51d006772cd",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/rolagens.js": {
+    "mtime": 1790859402.927312,
+    "ast_hash": "9cad6ce6d583eb03aaeb5b5de9422705",
+    "semantic_hash": ""
+  },
+  "renderer/js/jogo/util.js": {
+    "mtime": 1790854992.0609405,
+    "ast_hash": "e1fec1000b6fc5fee8a3e6d8fcf26857",
+    "semantic_hash": ""
+  },
+  "renderer/js/particulas.js": {
+    "mtime": 1790729441.1618235,
+    "ast_hash": "20d24ba2933613791eafc896ed35b375",
+    "semantic_hash": ""
+  },
+  "renderer/js/telas/config.js": {
+    "mtime": 1790790872.7305167,
+    "ast_hash": "9b0003ffa39fc2a7ae41ce41f763b1ff",
+    "semantic_hash": ""
+  },
+  "renderer/js/telas/criacao.js": {
+    "mtime": 1790881166.4875252,
+    "ast_hash": "8ed1d34b6a8212286fa3c8331f0ecafd",
+    "semantic_hash": ""
+  },
+  "renderer/js/telas/inicio.js": {
+    "mtime": 1790871560.9600616,
+    "ast_hash": "9100a8c644f68709793977430b7ef257",
+    "semantic_hash": ""
+  },
+  "renderer/js/telas/jogo.js": {
+    "mtime": 1790860510.025486,
+    "ast_hash": "35351858cd553bceb7c1d997a01bbcc2",
+    "semantic_hash": ""
+  },
+  "renderer/js/temas.js": {
+    "mtime": 1790729441.1643584,
+    "ast_hash": "7c06b06bbdd6c749b5a899a692228e7f",
+    "semantic_hash": ""
+  },
+  "renderer/js/ui.js": {
+    "mtime": 1790729441.1643584,
+    "ast_hash": "753a3ddba4394d1ad9ae7f9064d49f8f",
+    "semantic_hash": ""
+  },
+  "renderer/js/vozes.js": {
+    "mtime": 1790859403.3491547,
+    "ast_hash": "239e618e99f2aaf740eef38e33feebb7",
+    "semantic_hash": ""
+  },
+  "src/main/campaign-store.js": {
+    "mtime": 1790871562.316997,
+    "ast_hash": "e01884fa50c16545c674ddc7d96a105a",
+    "semantic_hash": ""
+  },
+  "src/main/catalogo.js": {
+    "mtime": 1790793326.5407631,
+    "ast_hash": "beaaed01e58a06067b868039be300e35",
+    "semantic_hash": ""
+  },
+  "src/main/coop/cliente.js": {
+    "mtime": 1790859407.6198723,
+    "ast_hash": "be64bf8eee93969c64abbfaceb28f8ff",
+    "semantic_hash": ""
+  },
+  "src/main/coop/servidor.js": {
+    "mtime": 1790859408.0758562,
+    "ast_hash": "3144230defce57b893e56647c6120a20",
+    "semantic_hash": ""
+  },
+  "src/main/diario.js": {
+    "mtime": 1790859408.7474196,
+    "ast_hash": "425a3e1292966f1c6f8d87453348b87c",
+    "semantic_hash": ""
+  },
+  "src/main/engine.js": {
+    "mtime": 1790871561.9365208,
+    "ast_hash": "5f162cc58dba5badaf35bc475fe13d95",
+    "semantic_hash": ""
+  },
+  "src/main/eventos.js": {
+    "mtime": 1790859404.600287,
+    "ast_hash": "60fc5f293fc1e8c574879cfb62c71435",
+    "semantic_hash": ""
+  },
+  "src/main/gm-prompt.js": {
+    "mtime": 1790859405.105469,
+    "ast_hash": "6a4572adb776d4d6f676c7dff9dd5bf9",
+    "semantic_hash": ""
+  },
+  "src/main/mapa.js": {
+    "mtime": 1790859409.1486387,
+    "ast_hash": "d4f4b9ea96a60cde43be964d1e944540",
+    "semantic_hash": ""
+  },
+  "src/main/memoria.js": {
+    "mtime": 1790854987.3005707,
+    "ast_hash": "cbe2feb9c639fd027039c0419b86a655",
+    "semantic_hash": ""
+  },
+  "src/main/providers/anthropic.js": {
+    "mtime": 1790729441.1673722,
+    "ast_hash": "f5ecf7b64bcef8b1e73f3b42b22924e8",
+    "semantic_hash": ""
+  },
+  "src/main/providers/claude-code.js": {
+    "mtime": 1790854986.051576,
+    "ast_hash": "8d0cf19332b34ce11f61585d5e440b54",
+    "semantic_hash": ""
+  },
+  "src/main/providers/demo.js": {
+    "mtime": 1790859400.4319367,
+    "ast_hash": "15214c4ba896f9ef9d22f2a989dc06b0",
+    "semantic_hash": ""
+  },
+  "src/main/regras.js": {
+    "mtime": 1790854986.5058112,
+    "ast_hash": "3150df553a8a3fe4f7226a850c9ae266",
+    "semantic_hash": ""
+  },
+  "src/main/settings.js": {
+    "mtime": 1790790875.8972168,
+    "ast_hash": "9a496ddaeebe4c736ae9a579824a261f",
+    "semantic_hash": ""
+  },
+  "src/main/turno.js": {
+    "mtime": 1790871561.5702267,
+    "ast_hash": "ce476dd4be1b2ba1baa36506e4ef821a",
+    "semantic_hash": ""
+  },
+  "src/main/util.js": {
+    "mtime": 1790729441.169372,
+    "ast_hash": "5a0ce8cd5642f6a21e7aa13b4860335f",
+    "semantic_hash": ""
+  },
+  "src/main/voz-instalador.js": {
+    "mtime": 1790875598.6509697,
+    "ast_hash": "1c302f5a5d2628d6241802efe4ed14da",
+    "semantic_hash": ""
+  },
+  "src/main/voz-presets.js": {
+    "mtime": 1790790877.250955,
+    "ast_hash": "24fe4c7835d90e010f6c811184a8d221",
+    "semantic_hash": ""
+  },
+  "src/main/voz.js": {
+    "mtime": 1790875598.2732532,
+    "ast_hash": "92e47485d94df719f4c724ce616cfe1d",
+    "semantic_hash": ""
+  },
+  "voz/CronicasVoz/CronicasVoz.csproj": {
+    "mtime": 1790875599.7696495,
+    "ast_hash": "62b1dcd82288f780184fe3efe08405ed",
+    "semantic_hash": ""
+  },
+  "voz/CronicasVoz/Program.cs": {
+    "mtime": 1790875599.0442839,
+    "ast_hash": "7e06487fb784b1e51514f410254634e1",
+    "semantic_hash": ""
+  },
+  "voz/instalar.js": {
+    "mtime": 1790790878.036863,
+    "ast_hash": "6ecb901b53021515c66f4f1d4fe49038",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1790790868.4139771,
+    "ast_hash": "6667735536a07cf3fe467ee81e169f29",
+    "semantic_hash": ""
+  },
+  "docs/decisions.md": {
+    "mtime": 1790879178.61197,
+    "ast_hash": "6d95a4edeecc070dc137e963d3330869",
+    "semantic_hash": ""
+  },
+  "docs/knowledge/errors-aprendidos.md": {
+    "mtime": 1790873273.913223,
+    "ast_hash": "f69fd7c570596399eb4023951758e43d",
+    "semantic_hash": ""
+  },
+  "docs/knowledge/pending-validation.md": {
+    "mtime": 1790878354.4016593,
+    "ast_hash": "1d328ffe943f683afb95d8fc62d442da",
+    "semantic_hash": ""
+  },
+  "docs/tasks/kit-ui-dark-fantasy.md": {
+    "mtime": 1790873273.9192433,
+    "ast_hash": "52f1ed9d7a1aeac61d7460567b11f6a5",
+    "semantic_hash": ""
+  },
+  "examples/ui-contexts.html": {
+    "mtime": 1790872976.6068003,
+    "ast_hash": "d4d3894057460b3c642387cbb2eb0a85",
+    "semantic_hash": ""
+  },
+  "renderer/index.html": {
+    "mtime": 1790877564.6385074,
+    "ast_hash": "3485d7cf84bf499e68e41edbdf2124c8",
+    "semantic_hash": ""
+  },
+  "novas coisas/ChatGPT Image Sep 30, 2026, 02_06_32 PM.png": {
+    "mtime": 1790787994.63981,
+    "ast_hash": "144848ee3d1b0c7156a5669bc69f93ef",
+    "semantic_hash": ""
+  },
+  "novas coisas/ChatGPT Image Sep 30, 2026, 02_10_07 PM.png": {
+    "mtime": 1790788221.413643,
+    "ast_hash": "6fe26225277f0f770cf7489497f72801",
+    "semantic_hash": ""
+  },
+  "novas coisas/a802910b-a879-4525-9de3-b89d768869e9.png": {
+    "mtime": 1790788456.21441,
+    "ast_hash": "adb408973536f14cfaf28d5b210bf045",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/ABYSS_OX.png": {
+    "mtime": 1790777014.5559962,
+    "ast_hash": "a7866667b7b284f71f162eefa359152f",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/ASH_MERMAID.png": {
+    "mtime": 1790777083.5280855,
+    "ast_hash": "b3cf79fae25c4685c1d0504b366f0989",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/BELL_SPIDER.png": {
+    "mtime": 1790776682.2288964,
+    "ast_hash": "0d2a7f3b4dbdad580443c98760f5f45b",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/BISHOP_OF_FLIES.png": {
+    "mtime": 1790777210.856656,
+    "ast_hash": "153ebc6117da9e3b5800f9b032477610",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/BONE_SHEPHERD.png": {
+    "mtime": 1790776305.2010608,
+    "ast_hash": "f61474628f08107b91d97ad7308765ea",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/CATHEDRAL_TOAD.png": {
+    "mtime": 1790776492.1380494,
+    "ast_hash": "0bfc3f1121275e78e15b946d7f49ec05",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/CHILD_OF_DEAD_MOON.png": {
+    "mtime": 1790776833.7482908,
+    "ast_hash": "d3bb796c247e9ba485c594a6cc572b51",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/DROWNED_ANGEL.png": {
+    "mtime": 1790777321.2213552,
+    "ast_hash": "23a7ac1013bcd7276789f99c016f9da1",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/ECHO_EATER.png": {
+    "mtime": 1790776565.8134847,
+    "ast_hash": "2fadf4ca8ec3ac4da20c9d0e2a9e2e39",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/GLASS_STAG.png": {
+    "mtime": 1790776385.143082,
+    "ast_hash": "70c931af167d16aed08313b1424f0940",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/HIVE_MAN.png": {
+    "mtime": 1790776864.2405763,
+    "ast_hash": "5d56864a16560d4c05811247bc10389e",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/HOLLOW_KNIGHT.png": {
+    "mtime": 1790776602.5141482,
+    "ast_hash": "602ae71994061584534ab464d6661e95",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/HUNGRY_CLOCK.png": {
+    "mtime": 1790777522.3458586,
+    "ast_hash": "894b92861cc55fb4f731e94c84823847",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/LIGHT_DEVOURER.png": {
+    "mtime": 1790777117.9245114,
+    "ast_hash": "27066ab112191ae50ce4b568087836dc",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/MANY_SHADOWS_HOUND.png": {
+    "mtime": 1790777278.625708,
+    "ast_hash": "21bd57c37e7be6c3edcd5a48b0cbe8cc",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/MIST_WIDOW.png": {
+    "mtime": 1790776420.5773363,
+    "ast_hash": "4c968cd2eea46a54c91278c9aaf6508c",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/PORCELAIN_GHOUL.png": {
+    "mtime": 1790776935.5166888,
+    "ast_hash": "bdbe3a1375a3fe538c38ad5747e9c4df",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/QUEEN_OF_GOLDEN_WORMS.png": {
+    "mtime": 1790776529.471728,
+    "ast_hash": "f77bb0a460428eb4a2220243b0cd270a",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/SWAMP_MOUTH.png": {
+    "mtime": 1790776343.046794,
+    "ast_hash": "0301e55ca3daf8643d33322a1cdfeb22",
+    "semantic_hash": ""
+  },
+  "novas coisas/monster-art/WALKING_TREE.png": {
+    "mtime": 1790777245.624718,
+    "ast_hash": "3f3c3d1d84066fa9c57677f572e539b8",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/CRYPT_AMBIENCE.png": {
+    "mtime": 1790772423.6409497,
+    "ast_hash": "a9e00b757d9cb825416624e9ae1b392c",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/CRYPT_BATTLEMAP.png": {
+    "mtime": 1790774493.5214303,
+    "ast_hash": "12ad01900aa155878ee7463ae3cf57a5",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/CRYSTAL_CAVE_AMBIENCE.png": {
+    "mtime": 1790772576.5093877,
+    "ast_hash": "e4b20ddc2d1897163b6a78c8b7f09978",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/CRYSTAL_CAVE_BATTLEMAP.png": {
+    "mtime": 1790774600.3663564,
+    "ast_hash": "f879dca680232376a88d234bd9b6c46e",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/DESERT_TEMPLE_AMBIENCE.png": {
+    "mtime": 1790773526.901131,
+    "ast_hash": "ed5e3594b1e437293b27ce653fdb7ea6",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/DESERT_TEMPLE_BATTLEMAP.png": {
+    "mtime": 1790775151.2867258,
+    "ast_hash": "c57e25eb780394f4639475ec3e1d2966",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/FOREST_RUINS_AMBIENCE.png": {
+    "mtime": 1790772680.3803668,
+    "ast_hash": "00abeb529dbb4be4b9f3114f3000ecfa",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/FOREST_RUINS_BATTLEMAP.png": {
+    "mtime": 1790774664.4513142,
+    "ast_hash": "b2b27550c8352228bce97169653ad0ce",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/PLAINS_CAMP_AMBIENCE.png": {
+    "mtime": 1790772832.7034688,
+    "ast_hash": "0b02b4366c98ab1fd18f9688d0933b7f",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/PLAINS_CAMP_BATTLEMAP.png": {
+    "mtime": 1790774723.9311817,
+    "ast_hash": "13a1593949a8772bd03e05c45ad166ab",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/SNOW_PASS_AMBIENCE.png": {
+    "mtime": 1790773387.27392,
+    "ast_hash": "2b9c0a72836da4535a0f42cd2654628a",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/SNOW_PASS_BATTLEMAP.png": {
+    "mtime": 1790775088.650524,
+    "ast_hash": "fcc87c8bafa51aa933fd604b5bffb373",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/SWAMP_AMBIENCE.png": {
+    "mtime": 1790775203.4012282,
+    "ast_hash": "c9316f16e9b78e4616f8c9a925d2470a",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/SWAMP_BATTLEMAP.png": {
+    "mtime": 1790774818.3185453,
+    "ast_hash": "86fb94b7ade8369782fcb3f533a0540d",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/THRONE_ROOM_AMBIENCE.png": {
+    "mtime": 1790773167.2856002,
+    "ast_hash": "8bee511820c285545c6ac92483ad9333",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/THRONE_ROOM_BATTLEMAP.png": {
+    "mtime": 1790774929.2334652,
+    "ast_hash": "be0e8f37691d82cbba142ab29e04cae3",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/TOWN_SQUARE_AMBIENCE.png": {
+    "mtime": 1790773084.2501717,
+    "ast_hash": "1af8fea9d3c4ce4ba267f082b48c89bf",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/TOWN_SQUARE_BATTLEMAP.png": {
+    "mtime": 1790774862.627401,
+    "ast_hash": "ec50a17b6b2a1e45915631c8bce3bd6c",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/VOLCANIC_FORTRESS_AMBIENCE.png": {
+    "mtime": 1790773296.929737,
+    "ast_hash": "18a164baad8d8b9735195ccd864579fe",
+    "semantic_hash": ""
+  },
+  "novas coisas/rpg-art/VOLCANIC_FORTRESS_BATTLEMAP.png": {
+    "mtime": 1790774990.7647989,
+    "ast_hash": "6cd878b3b755bfb07e1c91248a8021e7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/acampamento-planicie.webp": {
+    "mtime": 1790790252.7685149,
+    "ast_hash": "042460face4a9dfe2f65b320fc46e21c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/cripta.webp": {
+    "mtime": 1790790250.705691,
+    "ast_hash": "b9c3db07751f5091926b2516ca9970c3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/fortaleza-vulcanica.webp": {
+    "mtime": 1790790255.36336,
+    "ast_hash": "c4ae9cbd505afc8681ebf70c8b2b133b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/gruta-azul.webp": {
+    "mtime": 1790790251.2209027,
+    "ast_hash": "78d380567a5b755edfc638011fccf82d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/pantano.webp": {
+    "mtime": 1790790253.683045,
+    "ast_hash": "1025a64fd1cf7f77988fae737f9482df",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/passo-nevado.webp": {
+    "mtime": 1790790253.2313673,
+    "ast_hash": "5558f2e86a52606d4a7d6af4aa1f0408",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/praca-da-cidade.webp": {
+    "mtime": 1790790254.714613,
+    "ast_hash": "a6a7863fd14b28a905a679f883aa1bf7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/ruinas-da-floresta.webp": {
+    "mtime": 1790790252.218565,
+    "ast_hash": "b7a0f846423ab0583b997709d5770e98",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/salao-real.webp": {
+    "mtime": 1790790254.112378,
+    "ast_hash": "ac021c94a24325527e47a622b226666f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/batalha/templo-do-deserto.webp": {
+    "mtime": 1790790251.6669147,
+    "ast_hash": "32f322f22153aa863752a101576ebdf2",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/acampamento-planicie.webp": {
+    "mtime": 1790790252.5013747,
+    "ast_hash": "c4f4239729841a1a5480dc2fecbf6a7c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/acampamento.webp": {
+    "mtime": 1790729441.022883,
+    "ast_hash": "99758b5eab24375c6cd3ad744e15f7ad",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/campo-de-batalha.webp": {
+    "mtime": 1790729441.023903,
+    "ast_hash": "efd389d2ddc66429b4933c874827ade2",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/caverna-cristais.webp": {
+    "mtime": 1790729441.0249057,
+    "ast_hash": "cd071710e0391ad33653a66c2560d9d7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/cemiterio.webp": {
+    "mtime": 1790729441.0249057,
+    "ast_hash": "1a3f1ead950f4c7e5ceeeb84253f73b6",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/cidade-deserto.webp": {
+    "mtime": 1790729441.0264175,
+    "ast_hash": "acf4ea50da880edf9039525ce24f907a",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/cidade-mercado.webp": {
+    "mtime": 1790729441.0270193,
+    "ast_hash": "4d3c341de4f86ecd3040d42c1f3ef3c4",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/cripta.webp": {
+    "mtime": 1790790250.4946158,
+    "ast_hash": "27b298dcca3ed7a2d6d4b19b2b87fcab",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/deserto-ruinas.webp": {
+    "mtime": 1790729441.0280385,
+    "ast_hash": "462ae1bf7160c265cb368026361b83af",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/floresta-encantada.webp": {
+    "mtime": 1790729441.029032,
+    "ast_hash": "2245cd9f4ac1896bbc3646768cf20730",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/floresta-sombria.webp": {
+    "mtime": 1790729441.0300276,
+    "ast_hash": "c67a2fe844b34896463df3c8877d00d7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/fortaleza-sombria.webp": {
+    "mtime": 1790729441.0310326,
+    "ast_hash": "ae5344b059a422b32ca841117b52bd55",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/fortaleza-vulcanica.webp": {
+    "mtime": 1790790255.0088904,
+    "ast_hash": "701ecb90ebc4c2c1a64bcfd44e5c92d9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/gruta-azul.webp": {
+    "mtime": 1790790250.9369602,
+    "ast_hash": "b43e6402893c4acecede8aad98aa2430",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/guilda-aventureiros.webp": {
+    "mtime": 1790729441.032031,
+    "ast_hash": "cf96f080798ee6881082c4dc0b4e9622",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/mapa-mundi-dark-fantasy-4k.png": {
+    "mtime": 1790788333.92219,
+    "ast_hash": "5338354d028488e58548d2811178c169",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/mapa-mundi-dark-fantasy.png": {
+    "mtime": 1790786529.1063023,
+    "ast_hash": "650eebac2f903f666b96300a54e8ca2e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/mapa-mundi.webp": {
+    "mtime": 1790790258.5572042,
+    "ast_hash": "26aa18584056e39c48b65f4736403bf3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/mina-abandonada.webp": {
+    "mtime": 1790729441.0350296,
+    "ast_hash": "74c75fe20f5f8f0662cd5bcd7bebcd9f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/montanha-nevada.webp": {
+    "mtime": 1790729441.0360289,
+    "ast_hash": "8c1dba633b05bf5e7db79b67821e20b3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/pantano.webp": {
+    "mtime": 1790790253.4342313,
+    "ast_hash": "413f42e1abc4379a6aa923f62c1620f0",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/passo-nevado.webp": {
+    "mtime": 1790790252.992935,
+    "ast_hash": "42139221db85cbfe4b0ba10a1ab60f29",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/porto.webp": {
+    "mtime": 1790729441.0375352,
+    "ast_hash": "7e2ed32110dcbecb2337b8e9b47fbae8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/praca-da-cidade.webp": {
+    "mtime": 1790790254.388617,
+    "ast_hash": "f56b0fc0d7a0830fa62014c35e00d15f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/ruinas-antigas.webp": {
+    "mtime": 1790729441.0375352,
+    "ast_hash": "c53a77a7c7198e02f622dd4fcda62eb5",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/ruinas-da-floresta.webp": {
+    "mtime": 1790790251.9466584,
+    "ast_hash": "581d9c566d3f734e19f3bddbf6eaf34a",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/sala-do-trono.webp": {
+    "mtime": 1790729441.040009,
+    "ast_hash": "ce919b06b65dee449863309588e2ee82",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/salao-infernal.webp": {
+    "mtime": 1790729441.0410054,
+    "ast_hash": "ccbab8313510442cc277ec5f5e0fcf11",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/salao-real.webp": {
+    "mtime": 1790790253.9010537,
+    "ast_hash": "a73bbd82229905c93c8fccf61b82a4f2",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/taverna.webp": {
+    "mtime": 1790729441.042004,
+    "ast_hash": "3e5ec49a5aa3435c2c2ee27e16ac0539",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/templo-celestial.webp": {
+    "mtime": 1790729441.0430026,
+    "ast_hash": "decd0715c81c91bbeab0a23e58e88fea",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/templo-do-deserto.webp": {
+    "mtime": 1790790251.4353735,
+    "ast_hash": "9d28644be063f1ce2f0b7474ce7fd1d6",
+    "semantic_hash": ""
+  },
+  "renderer/assets/cenas/vila-campestre.webp": {
+    "mtime": 1790729441.0442348,
+    "ast_hash": "4a27ba7bb358edb86587ea5c04612b38",
+    "semantic_hash": ""
+  },
+  "renderer/assets/icon.png": {
+    "mtime": 1790790132.8441565,
+    "ast_hash": "d533bee0bfaba225c843fe7faa4faf75",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/a-ultima-luz.webp": {
+    "mtime": 1790729441.0497663,
+    "ast_hash": "8c69de4b646c6eaa5a45132f2c4f5590",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/adaga-do-viajante.webp": {
+    "mtime": 1790729441.0507672,
+    "ast_hash": "a80d9ab40863bf1b50d851b4b652013f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/ampulheta-do-fim.webp": {
+    "mtime": 1790729441.0517795,
+    "ast_hash": "2f562ed318e7fe1240e6b9ce69c42b44",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/anel-de-cinzas.webp": {
+    "mtime": 1790729441.0517795,
+    "ast_hash": "36c49b561bbcddb65afc1da16c9553c7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/arco-da-cacada-eterna.webp": {
+    "mtime": 1790729441.0527685,
+    "ast_hash": "7ad2b4dd21106ecb06269368fc9c90be",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/arco-folha-verde.webp": {
+    "mtime": 1790729441.0527685,
+    "ast_hash": "d7b96ccab08fae1868f399542d751299",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/armadura-do-grifo.webp": {
+    "mtime": 1790729441.0537643,
+    "ast_hash": "dc4cd0e31f3d01bdd08d4e92af9361ea",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/armadura-do-primeiro-guardiao.webp": {
+    "mtime": 1790729441.054273,
+    "ast_hash": "2bfdb8f57f537ccb4fd0d70383e4d4d2",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/botas-do-batedor.webp": {
+    "mtime": 1790729441.0547867,
+    "ast_hash": "9a2b18c9f7313e12ebc65d87a07e1ef1",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/cajado-de-veldarim.webp": {
+    "mtime": 1790729441.0547867,
+    "ast_hash": "19310256684ad9f39001fbcbc7181bad",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/cajado-runico.webp": {
+    "mtime": 1790729441.0558064,
+    "ast_hash": "11e21ee60313d7dd4ea2f4d309fd65d5",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/coracao-do-abismo.webp": {
+    "mtime": 1790729441.0568116,
+    "ast_hash": "77b488eceea905381205f03b3b917b5a",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/coracao-do-dragao-antigo.webp": {
+    "mtime": 1790729441.058228,
+    "ast_hash": "b3186dc1273436473293bedc4f3310f8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/coroa-do-rei-sem-nome.webp": {
+    "mtime": 1790729441.058228,
+    "ast_hash": "b26c8a252e6b043dc1b556536941e642",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/escudo-de-carvalho.webp": {
+    "mtime": 1790729441.0594409,
+    "ast_hash": "d6376d3095f4907ff44887d5517ef534",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/espada-do-vigia.webp": {
+    "mtime": 1790729441.0594409,
+    "ast_hash": "9336c9b07aae9d4d1cd6b902bbfb3a32",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/espada-longa.webp": {
+    "mtime": 1790729441.0607312,
+    "ast_hash": "1651e6e910a5bc7bc031d668de7317ac",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/espada-sangrenta-de-vharos.webp": {
+    "mtime": 1790729441.0607312,
+    "ast_hash": "9853d56c6b7cf0ff9d607c822347a3f7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/grimorio-das-sombras.webp": {
+    "mtime": 1790729441.0607312,
+    "ast_hash": "7787165277f7cff01e8b68d7828c85e5",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/lamina-da-lua.webp": {
+    "mtime": 1790729441.062029,
+    "ast_hash": "1b7071324a55568415e792c694e89960",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/lamina-do-rei-morto.webp": {
+    "mtime": 1790729441.0630393,
+    "ast_hash": "b1b4e1df9cc7da03073247d004e43698",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/machado-do-lenhador.webp": {
+    "mtime": 1790729441.0630393,
+    "ast_hash": "3c11ed1ce7c45e1a21d6ea39425a59a6",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/manto-do-aprendiz.webp": {
+    "mtime": 1790729441.0630393,
+    "ast_hash": "81fda6c3a97a9a02cd946d860f195144",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/mascara-do-herege.webp": {
+    "mtime": 1790729441.0640457,
+    "ast_hash": "b248081542868614eecc852f564acc44",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/olho-de-veldarim.webp": {
+    "mtime": 1790729441.0640457,
+    "ast_hash": "ca03b313c29366b099e211f8cd10a064",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/olho-do-oraculo.webp": {
+    "mtime": 1790729441.065047,
+    "ast_hash": "aa30418a41d190fc7bfb6bd9ac8e534b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/pocao-de-mana.webp": {
+    "mtime": 1790729441.065047,
+    "ast_hash": "52453b50c07aca3c08eb291b783c31a8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/itens/pocao-de-vida-menor.webp": {
+    "mtime": 1790729441.0664454,
+    "ast_hash": "2283ba5b2cd1a34dafd63c424840fdba",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/alaric-dorne.webp": {
+    "mtime": 1790729441.0684576,
+    "ast_hash": "a22e331ee27a5ae833bd54ffa46407dc",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/aldren-valcor.webp": {
+    "mtime": 1790729441.0694737,
+    "ast_hash": "3f0dff892cab41e3ba52efb7a2b1009f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/alistair-vane.webp": {
+    "mtime": 1790729441.0704067,
+    "ast_hash": "8f42d599ae091edd9278ce03a0050ee3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/barnabas.webp": {
+    "mtime": 1790729441.0714674,
+    "ast_hash": "0e4fdd8498c5622b4c8738ea8bc05d8a",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/borin-martelo-negro.webp": {
+    "mtime": 1790729441.0724814,
+    "ast_hash": "0fb1f19365a09c7e5be04aaff20dcba4",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/bromir.webp": {
+    "mtime": 1790729441.0735238,
+    "ast_hash": "00e943e2199a4f719ccbb8ae7920a92c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/celestine.webp": {
+    "mtime": 1790729441.0745404,
+    "ast_hash": "46f08de559f893867cc4147f87a4313f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/draven.webp": {
+    "mtime": 1790729441.0755496,
+    "ast_hash": "186039fdcf499d867a74686fd564deb9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/edric-iv.webp": {
+    "mtime": 1790729441.0755496,
+    "ast_hash": "95029e14d55c9700f315ea9109b819a3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/elayne.webp": {
+    "mtime": 1790729441.0768075,
+    "ast_hash": "9a310cce44e433370ebf010a76071d76",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/eryndor.webp": {
+    "mtime": 1790729441.078864,
+    "ast_hash": "f87e72f10df5a0249afc9b13e4964275",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/eveline-ravencroft.webp": {
+    "mtime": 1790729441.078864,
+    "ast_hash": "d5b1afbfe79370208325dc01c0524c2e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/fenrik.webp": {
+    "mtime": 1790729441.0803733,
+    "ast_hash": "fe360e99ae190cfa15a5b04f023d1047",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/garrick-barrilvelho.webp": {
+    "mtime": 1790729441.0813963,
+    "ast_hash": "0805aa93fcd3803335f9cc181e2f1902",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/grum.webp": {
+    "mtime": 1790729441.0829113,
+    "ast_hash": "1088c9fb5da740a3469f6fe8d60c1ddc",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/helena-voss.webp": {
+    "mtime": 1790729441.0829113,
+    "ast_hash": "3086c140a7105faa0e20be17442204f8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/homem-sem-nome.webp": {
+    "mtime": 1790729441.0829113,
+    "ast_hash": "8caea52b181378409b62ecc06f7518ec",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/kaara-sangue-frio.webp": {
+    "mtime": 1790729441.0853813,
+    "ast_hash": "971e3a0f26d4e8b7b7dd2c59285bc400",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/kharza.webp": {
+    "mtime": 1790729441.0861652,
+    "ast_hash": "1ab11fb33c3c6eac802f547fc7f6b69b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/lucius-morn.webp": {
+    "mtime": 1790729441.0875833,
+    "ast_hash": "b4356ff02b86fac09ef4a51b3e50df31",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/malrec.webp": {
+    "mtime": 1790729441.088605,
+    "ast_hash": "a7e140106899e7a32e937e08d3a04bb9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/mara-flint.webp": {
+    "mtime": 1790729441.0898933,
+    "ast_hash": "3fcd8228c64c969f6279b137aa219265",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/mathias.webp": {
+    "mtime": 1790729441.0909038,
+    "ast_hash": "f200a4b6ba74151ba8c979a1b0b53f94",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/mira-vell.webp": {
+    "mtime": 1790729441.092169,
+    "ast_hash": "e22aef0178c9c1c11dbdd4d135ea59ca",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/miriel-folha-serena.webp": {
+    "mtime": 1790729441.0946548,
+    "ast_hash": "1a433125a25c5337ff5edc51b2f77c4c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/morwenna.webp": {
+    "mtime": 1790729441.0956533,
+    "ast_hash": "c351cfa0563c9535fc3011d4e1acc2e0",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/nessa-lua-clara.webp": {
+    "mtime": 1790729441.0970986,
+    "ast_hash": "1c96234773f4ea7054d5453076ce5dfe",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/nymera.webp": {
+    "mtime": 1790729441.0981097,
+    "ast_hash": "3d376f9c3bd8e580b2c4d06848bf05ac",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/orren.webp": {
+    "mtime": 1790729441.0991085,
+    "ast_hash": "554bd9a97da2d16af12794b9bc2779f9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/orwyn.webp": {
+    "mtime": 1790729441.1001084,
+    "ast_hash": "098fe45ae74646d2db1952fc10b30d02",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/pipik-moeda-rapida.webp": {
+    "mtime": 1790729441.1011095,
+    "ast_hash": "71b2f04571cd11c8b954ba539f695a22",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/rikkit.webp": {
+    "mtime": 1790729441.1022518,
+    "ast_hash": "d9dbb6d77d6193dc5f8eae8fd90459f6",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/severin.webp": {
+    "mtime": 1790729441.1032465,
+    "ast_hash": "1e12fbb787734c69c5dce755e2b1542b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/silas-corvo.webp": {
+    "mtime": 1790729441.1043153,
+    "ast_hash": "f8a33ec31ff13ebd380422273e26e4cb",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/thrag-pedranegra.webp": {
+    "mtime": 1790729441.105317,
+    "ast_hash": "6cc60111fb8399c1cccced29448f135c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/tomas-rato.webp": {
+    "mtime": 1790729441.1068304,
+    "ast_hash": "e9420cc45374bf3601c6fb160fbff737",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/varek-mao-cinza.webp": {
+    "mtime": 1790729441.1068304,
+    "ast_hash": "1e1656020872b01c104d43e2be7bc410",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/velkan-morten.webp": {
+    "mtime": 1790729441.107844,
+    "ast_hash": "161e32f710c3c868ac1c66b7e88b485f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/vellin.webp": {
+    "mtime": 1790729441.1088438,
+    "ast_hash": "a2bbb72f4dc051174bd73b3f356cd719",
+    "semantic_hash": ""
+  },
+  "renderer/assets/npcs/ysara-veu-negro.webp": {
+    "mtime": 1790729441.1098435,
+    "ast_hash": "9bcd79f29effa8d2e72271ead22a8e35",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/alaric-dorne.webp": {
+    "mtime": 1790729441.1113532,
+    "ast_hash": "2ec944ea754f6d1235beb003dc6adf2c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/aldren-valcor.webp": {
+    "mtime": 1790729441.1123688,
+    "ast_hash": "13fcc7111c72cd93c40d906618d9c741",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/alistair-vane.webp": {
+    "mtime": 1790729441.1123688,
+    "ast_hash": "efd29c6d1532c699e75ebfa9ac69a40b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/anjo-afogado.webp": {
+    "mtime": 1790790256.2360606,
+    "ast_hash": "153227f38a4b7cc1cede4b5439d5d77c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/anjo.webp": {
+    "mtime": 1790729441.1133657,
+    "ast_hash": "c63cc69cd969dd54d5502aa695a64705",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/aranha-sino.webp": {
+    "mtime": 1790790255.7038403,
+    "ast_hash": "8ed12bfdd5f26ba7a230bc5a54bb2612",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/arqueira.webp": {
+    "mtime": 1790729441.114365,
+    "ast_hash": "6fb7f66b4899cf1a025e5e1c2dbee39c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/arvore-andante.webp": {
+    "mtime": 1790790257.7319808,
+    "ast_hash": "93890f9d8bbb9e1c89ecab3a1a379fb7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/bandido.webp": {
+    "mtime": 1790729441.114365,
+    "ast_hash": "da293dad9e778d9b12c0f18304567f01",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/barbaro.webp": {
+    "mtime": 1790729441.1153712,
+    "ast_hash": "73f65d773a60dd1b639a5da5f2209e14",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/barnabas.webp": {
+    "mtime": 1790729441.1160977,
+    "ast_hash": "89fd886bc2aced703b00a57f3aadff76",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/bispo-das-moscas.webp": {
+    "mtime": 1790790255.8186417,
+    "ast_hash": "988d01b0e0f42b9aaa0cba9e301d1f8f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/boca-do-pantano.webp": {
+    "mtime": 1790790257.6059215,
+    "ast_hash": "2922af6ac42ebe405975923fdc522100",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/boi-do-abismo.webp": {
+    "mtime": 1790790255.4812057,
+    "ast_hash": "acfc27435be39788c7fac5653d12036b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/borin-martelo-negro.webp": {
+    "mtime": 1790729441.1172297,
+    "ast_hash": "d2390cbcfbad4caa3c1bec9d89dbcb31",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/bromir.webp": {
+    "mtime": 1790729441.1182475,
+    "ast_hash": "63eb0257532f37c6d50c9ee8eab9854e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/cao-de-muitas-sombras.webp": {
+    "mtime": 1790790257.1048286,
+    "ast_hash": "49362f958872b87963ac5bdb479133c5",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/carnical-de-porcelana.webp": {
+    "mtime": 1790790257.3132696,
+    "ast_hash": "7dd12a873f2a5b65220ea2a6c1184b37",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/cavaleiro-oco.webp": {
+    "mtime": 1790790256.7432935,
+    "ast_hash": "e43878eb5ac05bbfc40efd3d5f065549",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/celestine.webp": {
+    "mtime": 1790729441.1182475,
+    "ast_hash": "448d2f5ca5d524721540dcfda143a43e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/cervo-de-vidro.webp": {
+    "mtime": 1790790256.4819074,
+    "ast_hash": "ee83f0875d18f9ef3ced47249c6374e4",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/cultista.webp": {
+    "mtime": 1790729441.1196554,
+    "ast_hash": "0476eafe20a41498fcce0bd552818b5a",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/demonio.webp": {
+    "mtime": 1790729441.1228566,
+    "ast_hash": "08025ef019aedc47a2d92dcae2901662",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/devorador-de-ecos.webp": {
+    "mtime": 1790790256.3367965,
+    "ast_hash": "9cc8697e6cb3e35caffc89e563e26e32",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/devorador-de-luz.webp": {
+    "mtime": 1790790256.9939318,
+    "ast_hash": "7a4cdb22b58dd4f26acf098bce5220d4",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/draven.webp": {
+    "mtime": 1790729441.1238515,
+    "ast_hash": "d335272a1baecbc128c2005f0b8925fd",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/edric-iv.webp": {
+    "mtime": 1790729441.1248555,
+    "ast_hash": "66f6c4fcdcab497cbdfcd8b4bb8a43db",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/elayne.webp": {
+    "mtime": 1790729441.1248555,
+    "ast_hash": "12ee00c27a37b6a86841d0b925c41ee1",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/eryndor.webp": {
+    "mtime": 1790729441.1258543,
+    "ast_hash": "98f67fe9466161476e03d510f7b16fb0",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/eveline-ravencroft.webp": {
+    "mtime": 1790729441.1268637,
+    "ast_hash": "ac9d6e8da653d920fd7e97288b466d7c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/fenrik.webp": {
+    "mtime": 1790729441.1268637,
+    "ast_hash": "32a9b8e0e1a7445c65f0e29eabd03bd5",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/ferreiro-anao.webp": {
+    "mtime": 1790729441.1296659,
+    "ast_hash": "2316ed5c590b0475b808c8aedd6fa110",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/filho-da-lua-morta.webp": {
+    "mtime": 1790790256.1263883,
+    "ast_hash": "5f4ce50c902f15a2851f78a08ac98efe",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/garrick-barrilvelho.webp": {
+    "mtime": 1790729441.130672,
+    "ast_hash": "36f2c2562561f7251a7606d49fba5f44",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/goblin-mercador.webp": {
+    "mtime": 1790729441.130672,
+    "ast_hash": "0ca3c651e1415502080d4db5b68817eb",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/grum.webp": {
+    "mtime": 1790729441.130672,
+    "ast_hash": "559de5b289a2e03d777dcd3029276875",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/guerreiro.webp": {
+    "mtime": 1790729441.1320515,
+    "ast_hash": "bb70ae21f74cd905ef831f04257c8bbd",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/helena-voss.webp": {
+    "mtime": 1790729441.133061,
+    "ast_hash": "6e5b6ff7a2947a5ed343cd74e87e4578",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/homem-colmeia.webp": {
+    "mtime": 1790790256.6082478,
+    "ast_hash": "3c8d81b1dadbaf3732e93328761f5fee",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/homem-sem-nome.webp": {
+    "mtime": 1790729441.133061,
+    "ast_hash": "bce562640945aedc3b96ffdf848f7c8f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/kaara-sangue-frio.webp": {
+    "mtime": 1790729441.1340673,
+    "ast_hash": "8d831a00a28b15cf9a0bf6d7a3a1a1b6",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/kharza.webp": {
+    "mtime": 1790729441.1340673,
+    "ast_hash": "5f7a84cb6917f41d404e11a0d84cc824",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/ladino-encapuzado.webp": {
+    "mtime": 1790729441.1350634,
+    "ast_hash": "0db1a34ad6e09d0b1e37a5946d3b8364",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/lucius-morn.webp": {
+    "mtime": 1790729441.1361918,
+    "ast_hash": "54afe8e86a6197237d0465a2259d0e63",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/maga-elfa.webp": {
+    "mtime": 1790729441.1361918,
+    "ast_hash": "62c47cf647df6874afe291cd2c78ed7d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/mago-anciao.webp": {
+    "mtime": 1790729441.1372008,
+    "ast_hash": "8fac7062c5703b94d1a3dce66cb0707e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/malrec.webp": {
+    "mtime": 1790729441.138204,
+    "ast_hash": "07dc708d7ffc8ddef53413b09e33a6ca",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/mara-flint.webp": {
+    "mtime": 1790729441.138204,
+    "ast_hash": "212500ddc773aa55713b536f370ee323",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/mathias.webp": {
+    "mtime": 1790729441.1392024,
+    "ast_hash": "c48f806b4b0d79a44eee3c07c4876375",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/mercenaria.webp": {
+    "mtime": 1790729441.1402018,
+    "ast_hash": "74527b1ab394b9b42a9960ee4bdef406",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/mira-vell.webp": {
+    "mtime": 1790729441.1402018,
+    "ast_hash": "0307f6946c96d2c1442c58d8ddad2ccc",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/miriel-folha-serena.webp": {
+    "mtime": 1790729441.1412024,
+    "ast_hash": "1df4a682d5d747effd7072beb4f1238c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/morwenna.webp": {
+    "mtime": 1790729441.1422021,
+    "ast_hash": "4b1a3a41a5f7ae45a88ef94a9aede2a8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/necromante.webp": {
+    "mtime": 1790729441.1422021,
+    "ast_hash": "404ada48460afa3e3173a3837cc16a72",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/nessa-lua-clara.webp": {
+    "mtime": 1790729441.1433372,
+    "ast_hash": "4d1769c7018d1bd716ffa6094c0b29c8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/nymera.webp": {
+    "mtime": 1790729441.1433372,
+    "ast_hash": "d49d58dd993dd51a53be7ab341359da5",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/orc.webp": {
+    "mtime": 1790729441.1448886,
+    "ast_hash": "ae1fc8ffdd5e1a68d48a4f00535ad501",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/orren.webp": {
+    "mtime": 1790729441.1458983,
+    "ast_hash": "a2f0324cbe320dca55ae0ed9999f09b9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/orwyn.webp": {
+    "mtime": 1790729441.147006,
+    "ast_hash": "1608e221c37d5daee118726b262c64bc",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/paladina.webp": {
+    "mtime": 1790729441.1480167,
+    "ast_hash": "bff892670fc20a183410d5325bd2861b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/pastor-de-ossos.webp": {
+    "mtime": 1790790255.9200175,
+    "ast_hash": "3cd0dcce732866036d400ad801b75f9b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/pipik-moeda-rapida.webp": {
+    "mtime": 1790729441.1480167,
+    "ast_hash": "ccc2a85845e6107939a67be2aa54f2a8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/rainha-dos-vermes-dourados.webp": {
+    "mtime": 1790790257.4590697,
+    "ast_hash": "d1242fd7a1eedf266f2c2b86bb3c1ede",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/rainha.webp": {
+    "mtime": 1790729441.1493142,
+    "ast_hash": "7e2a1767e614e4d5911198c2817d1f6c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/rei.webp": {
+    "mtime": 1790729441.1493142,
+    "ast_hash": "0d4fc700c3514d022742a5e02e7dca6b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/relogio-faminto.webp": {
+    "mtime": 1790790256.8606324,
+    "ast_hash": "1dfc04df33caa2b47c2d420edcb726b9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/rikkit.webp": {
+    "mtime": 1790729441.1505573,
+    "ast_hash": "00a0ffd0e5a4505f3ef1f122350da474",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/sapo-catedral.webp": {
+    "mtime": 1790790256.0391614,
+    "ast_hash": "3dda19241cfeaf5575cbcb3774e9fece",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/sereia-de-cinzas.webp": {
+    "mtime": 1790790255.5950708,
+    "ast_hash": "437647602806409eb9554d0cbfb261c7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/severin.webp": {
+    "mtime": 1790729441.1505573,
+    "ast_hash": "7bb8cc42c79b7a4594f8ce9e4ed35c88",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/silas-corvo.webp": {
+    "mtime": 1790729441.1515865,
+    "ast_hash": "951bc935461004ef4c9750a2f25273d4",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/taverneiro.webp": {
+    "mtime": 1790729441.1525881,
+    "ast_hash": "fa6be19a5129ed97ada205af81e95448",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/thrag-pedranegra.webp": {
+    "mtime": 1790729441.1538002,
+    "ast_hash": "0dcc9a5ae098fbe9b2dac3eaf99507dc",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/tomas-rato.webp": {
+    "mtime": 1790729441.154809,
+    "ast_hash": "363890d9b4de6d8c1b934f8c9fe12ea1",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/vampiro.webp": {
+    "mtime": 1790729441.154809,
+    "ast_hash": "3c073d58d54ef0b967cb03590c56f3c3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/varek-mao-cinza.webp": {
+    "mtime": 1790729441.1558185,
+    "ast_hash": "c6d5915081f2a21d688831eed5fadbc9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/velkan-morten.webp": {
+    "mtime": 1790729441.1558185,
+    "ast_hash": "005622138f76563f195b3b7ff0c4a42e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/vellin.webp": {
+    "mtime": 1790729441.156822,
+    "ast_hash": "31baf4f51693461a1473dee4e2a80319",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/viuva-da-nevoa.webp": {
+    "mtime": 1790790257.2111757,
+    "ast_hash": "a06924f8de06241a54efe140dda7c77d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/retratos/ysara-veu-negro.webp": {
+    "mtime": 1790729441.1578214,
+    "ast_hash": "e6fc1d4186cd77c8e4dfa1c1453181b8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Backgrounds/bg-leather.png": {
+    "mtime": 1790860794.3882532,
+    "ast_hash": "cc4fc2454a25e2a4a7155635901fc249",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Backgrounds/bg-panel-dark.png": {
+    "mtime": 1790860825.5750935,
+    "ast_hash": "f401b3acda4fdcd7e65d2572cd23f640",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Bars/bar-frame.png": {
+    "mtime": 1790858526.2836828,
+    "ast_hash": "9dee93d4bb7918ba854f30eb59847825",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Bars/hp-fill.png": {
+    "mtime": 1790858582.4471605,
+    "ast_hash": "660f3cca1e87203bf6305ad98502e1ee",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Bars/mana-fill.png": {
+    "mtime": 1790858553.4610448,
+    "ast_hash": "747196e0711e71f85a69ebc6f7be3319",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Bars/stamina-fill.png": {
+    "mtime": 1790858610.213005,
+    "ast_hash": "d022c3fea7714cbaaa24ccdca86156f2",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Buttons/button-danger.png": {
+    "mtime": 1790858299.5651846,
+    "ast_hash": "c0266864d64e946b9cc94251d00deba6",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Buttons/button-default.png": {
+    "mtime": 1790857601.3898222,
+    "ast_hash": "d8bf3406e7b4a6c9f83bc620f21557ec",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Buttons/button-hover.png": {
+    "mtime": 1790858269.4226773,
+    "ast_hash": "d15bb79c9e58dbbc7424b47a483f316e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Buttons/button-magic.png": {
+    "mtime": 1790858334.4280086,
+    "ast_hash": "a85971f19205330d1d3f33af968f7308",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Decoration/divider-minimal.png": {
+    "mtime": 1790858384.5205371,
+    "ast_hash": "8e53e472745fb35b6fa0174977cc2c0c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Decoration/divider.png": {
+    "mtime": 1790858359.2083688,
+    "ast_hash": "4feab68ba3c8e101b945af4f868c801d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Decoration/location-marker.png": {
+    "mtime": 1790858494.7259583,
+    "ast_hash": "09de4f30b6de7802dcab654226bfd78e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Decoration/scrollbar.png": {
+    "mtime": 1790858422.428836,
+    "ast_hash": "9d5efcd5b1cc66abf1d0a5a238f2a091",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Decoration/tab-selected.png": {
+    "mtime": 1790858450.5179298,
+    "ast_hash": "230b766633c4bcfd5f8a21ee89845335",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Frames/card-npc.png": {
+    "mtime": 1790857519.5303648,
+    "ast_hash": "fa3646a47211c3f0352b2a91ee929445",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Frames/frame-narrative.png": {
+    "mtime": 1790857395.8816843,
+    "ast_hash": "97f89258ee9665706a3bf9bb19858f36",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Frames/frame-panel.png": {
+    "mtime": 1790857154.845823,
+    "ast_hash": "d83fb330cb5c6118afeab8c1d13fa300",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Frames/frame-portrait-enemy.png": {
+    "mtime": 1790857441.7874606,
+    "ast_hash": "ccc434f8255c9c3ee4aa7b7f6e9da225",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Frames/frame-portrait-player.png": {
+    "mtime": 1790857196.867443,
+    "ast_hash": "3bb1b1c05080376cb74d2bd0d2961f7c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Frames/frame-tooltip.png": {
+    "mtime": 1790857484.3309102,
+    "ast_hash": "696874e07be54f1ee200180fe41397f4",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/actions/attack.png": {
+    "mtime": 1790860571.1197186,
+    "ast_hash": "0b8093b29927b209f5abe86ed81899e3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/actions/escape.png": {
+    "mtime": 1790860571.1518846,
+    "ast_hash": "dcfd3db80ba35f419a81c2d8178b4548",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/actions/interact.png": {
+    "mtime": 1790860571.179572,
+    "ast_hash": "d2b87e93395debd4d8196f74b21ac587",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/actions/investigate.png": {
+    "mtime": 1790860571.2065768,
+    "ast_hash": "0a209d0818583a85d613397b2fa13ff0",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/actions/magic.png": {
+    "mtime": 1790860571.229794,
+    "ast_hash": "54e5c2f5e334afd45a2895a7c967f5fe",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/actions/speak.png": {
+    "mtime": 1790860571.2618027,
+    "ast_hash": "fe4184ef8fb6ddb8b988070d99b7adde",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/attributes/cha.png": {
+    "mtime": 1790860571.2844224,
+    "ast_hash": "78da2f3d5390644c5c6727527f26f496",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/attributes/constitution.png": {
+    "mtime": 1790860571.3124368,
+    "ast_hash": "545b87d9f127f59fbcdb46e60a33d32e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/attributes/dex.png": {
+    "mtime": 1790860571.3367682,
+    "ast_hash": "54d2564cd8948ddfe3120e1a6c03745d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/attributes/int.png": {
+    "mtime": 1790860571.3676703,
+    "ast_hash": "13fc24afc9bdb5801b417dc87ff93734",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/attributes/str.png": {
+    "mtime": 1790860571.3973067,
+    "ast_hash": "ae53e8389281203983d2a5722cf0a101",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/attributes/wis.png": {
+    "mtime": 1790860571.4218304,
+    "ast_hash": "8c72d40bd9d97677d9d9252507cb8d72",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/classes/bard.png": {
+    "mtime": 1790878855.8655074,
+    "ast_hash": "4e3b3a5e8d575cfcf9dc5f635a4677e3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/classes/cleric.png": {
+    "mtime": 1790878765.5839658,
+    "ast_hash": "1465eac70ec3c99533b930fb19da374f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/classes/mage.png": {
+    "mtime": 1790878660.7319794,
+    "ast_hash": "da8489a3d89f0284345c6eedc6dc3e96",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/classes/ranger.png": {
+    "mtime": 1790878803.9504666,
+    "ast_hash": "aebc7e2d83264994e2e8f528642faa81",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/classes/rogue.png": {
+    "mtime": 1790878715.7771878,
+    "ast_hash": "2accea56273defa4dc136ef6647142e8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/classes/warrior.png": {
+    "mtime": 1790878594.3593664,
+    "ast_hash": "34dd98db81cdc776f69b830fd3a8edf8",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/menu/dice.png": {
+    "mtime": 1790860571.4544115,
+    "ast_hash": "7c8b24308be015ecb7b7afc075c7849c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/menu/grimoire.png": {
+    "mtime": 1790860571.4899201,
+    "ast_hash": "cf5d24915b510e9d71f7d4a912cd5738",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/menu/inventory.png": {
+    "mtime": 1790860557.6544712,
+    "ast_hash": "9b055760ab55c7d75a20d9b2e991fa27",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/menu/locations.png": {
+    "mtime": 1790860571.516961,
+    "ast_hash": "00a969177a6966d3c4abd0b9125f9935",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/menu/npcs.png": {
+    "mtime": 1790860571.549523,
+    "ast_hash": "f9faa4da50f3e372f7daee3e7fe71e0e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/menu/quests.png": {
+    "mtime": 1790860571.5773735,
+    "ast_hash": "f2388bc24a48850699733d9d2d37c32d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/menu/settings.png": {
+    "mtime": 1790860571.6108937,
+    "ast_hash": "90d3d685bc6a3a5efa85470a4072fa15",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/bleeding.png": {
+    "mtime": 1790860571.6382575,
+    "ast_hash": "511ac5e9982a3772ad348bc59d74b140",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/curse.png": {
+    "mtime": 1790860571.6622634,
+    "ast_hash": "af6ec9df6c1dbfecfd82a037294d3c91",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/downed.png": {
+    "mtime": 1790860571.688778,
+    "ast_hash": "965eb09d349b0dc53eb87928a4fd6be9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/fear.png": {
+    "mtime": 1790860571.7193015,
+    "ast_hash": "89879ab3e846be88afa7ffed3f3c4a6c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/health.png": {
+    "mtime": 1790860571.7563875,
+    "ast_hash": "2233e45c7fc60419c22969a01bc5df6a",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/mana.png": {
+    "mtime": 1790860571.7842462,
+    "ast_hash": "27d1fbd496f73c12d1f914768b6226a2",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/poison.png": {
+    "mtime": 1790860571.8142502,
+    "ast_hash": "cd39af7200f4197f9f4ec0f8b206d761",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/stamina.png": {
+    "mtime": 1790860571.839745,
+    "ast_hash": "8b2ddde17df02ba91bf36834ebea462c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Icons/status/stunned.png": {
+    "mtime": 1790860571.8702652,
+    "ast_hash": "d7f154a73fb93a7b170e23ebca182ad1",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/rarity/common.png": {
+    "mtime": 1790857871.3400147,
+    "ast_hash": "e550825cb310ccc7ca4c659f34e3ed52",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/rarity/epic.png": {
+    "mtime": 1790858116.7848277,
+    "ast_hash": "c89fee13bb5454c77227cfe5c62eca6d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/rarity/legendary.png": {
+    "mtime": 1790858175.4722564,
+    "ast_hash": "e767bd765c58fef5026a00f2bfe4f12c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/rarity/rare.png": {
+    "mtime": 1790857989.542314,
+    "ast_hash": "f54962105362eff0691c0db28362fd73",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/rarity/uncommon.png": {
+    "mtime": 1790857929.6741285,
+    "ast_hash": "956b77683217978ab4690e38e74d45bd",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/rarity/unique.png": {
+    "mtime": 1790858233.289883,
+    "ast_hash": "5c0739108acdeb3c0fa402ce42a05c4e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/slot-default.png": {
+    "mtime": 1790857570.3296168,
+    "ast_hash": "9a67596800659a31488418c51b879cf9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/slot-equipped.png": {
+    "mtime": 1790857762.2545924,
+    "ast_hash": "efc15aba9b335ee451ca2d044c42d32f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/slot-hover.png": {
+    "mtime": 1790857818.6829755,
+    "ast_hash": "cd06624a1e69be3a1d6056f9661aeb71",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/Slots/slot-selected.png": {
+    "mtime": 1790857699.8417108,
+    "ast_hash": "0cef8a1b1e7ee54f0eb4691567aae963",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/armaduras.webp": {
+    "mtime": 1790790195.547935,
+    "ast_hash": "7a89400c8603f439ebe382506254de4d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/armas.webp": {
+    "mtime": 1790790195.4724095,
+    "ast_hash": "d448e775782b4372c427740294c13973",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/bestiario.webp": {
+    "mtime": 1790790196.1387231,
+    "ast_hash": "519f7fc9b5dc4b036fe13f917923d1ce",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/chave.webp": {
+    "mtime": 1790790195.6813066,
+    "ast_hash": "6c7865e0d6558c56bc71c3f826e78d2d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/config.webp": {
+    "mtime": 1790790196.8897016,
+    "ast_hash": "e1c56db98cb100bf505191533eea4d03",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/dado.webp": {
+    "mtime": 1790790196.2425108,
+    "ast_hash": "f759098104d92206830965fae6b1efa6",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/diario.webp": {
+    "mtime": 1790790195.268198,
+    "ast_hash": "1b7382783b26344cfe226d2e8b65ab09",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/falar.webp": {
+    "mtime": 1790790196.3391428,
+    "ast_hash": "98c78c0c3e99507823e9a748f3b964b7",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/forja.webp": {
+    "mtime": 1790790195.7666943,
+    "ast_hash": "277b014322cc8a43ecf6dd8b98a720ff",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/local.webp": {
+    "mtime": 1790790195.178545,
+    "ast_hash": "4f82007bd6b059bd1573ecd04ef21288",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/lugares.webp": {
+    "mtime": 1790790196.0600145,
+    "ast_hash": "3af58780c59309d8aaa62c4edf0c8b16",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/magia.webp": {
+    "mtime": 1790790196.610585,
+    "ast_hash": "04406aa280b2f56eac6a2acfe81e72fc",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/mapa.webp": {
+    "mtime": 1790790195.9789248,
+    "ast_hash": "6949302216e774164d9e651f984c7a51",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/missao-falhou.webp": {
+    "mtime": 1790790195.1109507,
+    "ast_hash": "9ff65e4efa5d02c5af4b6844feb1fb7e",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/missao-ok.webp": {
+    "mtime": 1790790195.0035088,
+    "ast_hash": "97105ce6f1fb20e9f659fb6f4576dee3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/missao.webp": {
+    "mtime": 1790790194.9105682,
+    "ast_hash": "d112b742e73c8ab20c526c3ff8dd147b",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/mochila.webp": {
+    "mtime": 1790790195.379438,
+    "ast_hash": "7fc30aef9026c698a1deb250be22a876",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/npcs.webp": {
+    "mtime": 1790790195.8874383,
+    "ast_hash": "be079c7d1c6bb64272d5332af9d4015d",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/orientacao.webp": {
+    "mtime": 1790790194.8349712,
+    "ast_hash": "275ebfff6fb67646ad2c6ca768d35564",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/ouro.webp": {
+    "mtime": 1790790196.438939,
+    "ast_hash": "e0dc38342015872725e77110398f315f",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/perigo.webp": {
+    "mtime": 1790790196.6996622,
+    "ast_hash": "c3d27f5a1f936b146949ac54cae506c1",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/pocao.webp": {
+    "mtime": 1790790195.618201,
+    "ast_hash": "3b02b0a201973d48505dc02d1995661c",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/portal.webp": {
+    "mtime": 1790790196.8046627,
+    "ast_hash": "84671be6ef686f9c642b81efff812bab",
+    "semantic_hash": ""
+  },
+  "renderer/assets/ui/xp.webp": {
+    "mtime": 1790790196.529184,
+    "ast_hash": "c03c5600709dbb9963832f4c2330427b",
+    "semantic_hash": ""
+  },
+  "novas coisas/Clinking Mugs and Crackling.mp3": {
+    "mtime": 1790784892.2016315,
+    "ast_hash": "fe584726035991a5917510d2b6975737",
+    "semantic_hash": ""
+  },
+  "novas coisas/Creaking Hull, Rolling Sea.mp3": {
+    "mtime": 1790785655.8427572,
+    "ast_hash": "6c1cbae0a25ec13c531d4072806263d9",
+    "semantic_hash": ""
+  },
+  "novas coisas/Marketplace Murmur.mp3": {
+    "mtime": 1790784736.7160928,
+    "ast_hash": "cc02c56db94d225dd35575e8c34d31d3",
+    "semantic_hash": ""
+  },
+  "novas coisas/The Empty Stool.mp3": {
+    "mtime": 1790784355.700792,
+    "ast_hash": "fcbc554e2df4cf4b9e4eb0bb82838fbc",
+    "semantic_hash": ""
+  },
+  "renderer/assets/audio/cidade-1.mp3": {
+    "mtime": 1790790277.2938416,
+    "ast_hash": "cc02c56db94d225dd35575e8c34d31d3",
+    "semantic_hash": ""
+  },
+  "renderer/assets/audio/mar-1.mp3": {
+    "mtime": 1790790276.8619573,
+    "ast_hash": "6c1cbae0a25ec13c531d4072806263d9",
+    "semantic_hash": ""
+  },
+  "renderer/assets/audio/taverna-1.mp3": {
+    "mtime": 1790790275.6988568,
+    "ast_hash": "fe584726035991a5917510d2b6975737",
+    "semantic_hash": ""
+  },
+  "renderer/assets/audio/taverna-2.mp3": {
+    "mtime": 1790790276.112009,
+    "ast_hash": "fcbc554e2df4cf4b9e4eb0bb82838fbc",
+    "semantic_hash": ""
+  }
+}

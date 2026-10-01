@@ -35,6 +35,13 @@ const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+/** Faixas gravadas por tema (renderer/assets/audio). Temas sem faixa usam a música gerada. */
+const TRILHAS = {
+  taverna: ['assets/audio/taverna-1.mp3', 'assets/audio/taverna-2.mp3'],
+  mar: ['assets/audio/mar-1.mp3'],
+  cidade: ['assets/audio/cidade-1.mp3'],
+};
+
 export class Audio {
   constructor() {
     this.ctx = null;
@@ -65,6 +72,11 @@ export class Audio {
       this.reverb.buffer = this.criarSala(2.8, 2.4);
       this.reverbVol = ctx.createGain();
       this.reverbVol.gain.value = 0.9;
+      // a resposta ao impulso é ruído branco: sem corte, todo agudo que entra vira uma cauda de chiado
+      this.reverbEntrada = ctx.createBiquadFilter();
+      this.reverbEntrada.type = 'lowpass';
+      this.reverbEntrada.frequency.value = 4200;
+      this.reverbEntrada.connect(this.reverb);
       this.reverb.connect(this.reverbVol).connect(this.master);
       this.bus = {};
       for (const k of ['musica', 'ambiente', 'efeitos', 'voz']) {
@@ -124,18 +136,22 @@ export class Audio {
     if (rev > 0) {
       const r = ctx.createGain();
       r.gain.value = rev;
-      ult.connect(r).connect(this.reverb);
+      ult.connect(r).connect(this.reverbEntrada);
     }
     return g;
   }
 
-  ruido(tipo = 'branco', inicio = 0) {
+  /**
+   * Fonte de ruído em loop. `quando` = instante (ctx.currentTime) em que começa a soar: notas agendadas no futuro
+   * TÊM que passar o instante, senão o ruído toca desde já pelo ganho ainda em 1 (era o chiado antes de cada tambor).
+   */
+  ruido(tipo = 'branco', inicio = 0, quando = null) {
     const src = this.ctx.createBufferSource();
     src.buffer = tipo === 'marrom' ? this.ruidoMarrom : tipo === 'rosa' ? this.ruidoRosa : this.ruidoBranco;
     src.loop = true;
     src.loopStart = 0;
     src.playbackRate.value = 1;
-    src.start(this.ctx.currentTime, inicio || Math.random() * 3);
+    src.start(Math.max(this.ctx.currentTime, quando ?? 0), inicio || Math.random() * 3);
     return src;
   }
 
@@ -171,7 +187,7 @@ export class Audio {
     if (eco > 0) {
       const r = ctx.createGain();
       r.gain.value = eco;
-      g.connect(r).connect(this.reverb);
+      g.connect(r).connect(this.reverbEntrada);
     }
     let fim;
     const promessa = new Promise((res) => (fim = res));
@@ -227,7 +243,7 @@ export class Audio {
       g.connect(this.bus[k]);
       const r = ctx.createGain();
       r.gain.value = k === 'musica' ? 0.35 : 0.22;
-      g.connect(r).connect(this.reverb);
+      g.connect(r).connect(this.reverbEntrada);
       sub[k] = g;
     }
     const nos = [];
@@ -239,7 +255,32 @@ export class Audio {
       this.timers.push(setInterval(() => Math.random() < 0.6 && disparar(), cada * rnd(0.7, 1.3)));
       this.timers.push(setTimeout(disparar, rnd(800, cada)));
     }
-    this.iniciarMusica(p, sub.musica);
+    if (TRILHAS[id]?.length) this.tocarTrilha(TRILHAS[id], sub.musica, nos);
+    else this.iniciarMusica(p, sub.musica);
+  }
+
+  /** Trilha gravada (mp3) no lugar da música gerada: toca as faixas do tema em sequência, em loop. */
+  tocarTrilha(faixas, destino, nos) {
+    const ctx = this.ctx;
+    let i = Math.floor(Math.random() * faixas.length);
+    let atual = null;
+    let parado = false;
+    const tocar = () => {
+      if (parado) return;
+      const el = new window.Audio(faixas[i % faixas.length]);
+      i++;
+      el.crossOrigin = 'anonymous';
+      const src = ctx.createMediaElementSource(el);
+      const g = ctx.createGain();
+      g.gain.value = 0.9; // as faixas vêm masterizadas: um pouco abaixo para caber com o ambiente
+      src.connect(g).connect(destino);
+      el.addEventListener('ended', () => { try { src.disconnect(); } catch { /* ok */ } tocar(); });
+      el.addEventListener('error', () => { parado = true; }); // arquivo ausente: fica só o ambiente
+      el.play().catch(() => {});
+      atual = el;
+    };
+    tocar();
+    nos.push({ stop: () => { parado = true; if (atual) { const a = atual; setTimeout(() => a.pause(), 3500); } } });
   }
 
   // ───────────── ambiente: texturas contínuas ─────────────
@@ -384,7 +425,7 @@ export class Audio {
       g.connect(p).connect(destino);
       const r = ctx.createGain();
       r.gain.value = rev;
-      p.connect(r).connect(this.reverb);
+      p.connect(r).connect(this.reverbEntrada);
       return g;
     };
     switch (tipo) {
@@ -477,7 +518,7 @@ export class Audio {
         const g = out(0.06, 0.4);
         for (let i = 0; i < 5; i++) {
           const t0 = t + i * 0.13;
-          const src = this.ruido('rosa');
+          const src = this.ruido('rosa', 0, t0);
           const f = ctx.createBiquadFilter();
           f.type = 'bandpass';
           f.frequency.value = rnd(600, 900);
@@ -495,7 +536,7 @@ export class Audio {
         [0, 0.28].forEach((dt, i) => this.tambor(t + dt, 50, i ? 0.35 : 0.5, out(0.6, 0.3), 0.3, 0));
         break;
       case 'sussurro': {
-        const src = this.ruido('rosa');
+        const src = this.ruido('rosa', 0, t);
         const f = ctx.createBiquadFilter();
         f.type = 'bandpass';
         f.Q.value = 9;
@@ -611,7 +652,7 @@ export class Audio {
         vg.gain.setValueAtTime(0, t);
         vg.gain.linearRampToValueAtTime(f * 0.008, t + dur * 0.6);
         vib.connect(vg).connect(o.frequency);
-        const sopro = this.ruido('branco');
+        const sopro = this.ruido('branco', 0, t);
         const sf = ctx.createBiquadFilter();
         sf.type = 'bandpass';
         sf.frequency.value = f * 2;
@@ -702,7 +743,7 @@ export class Audio {
     o.start(t);
     o.stop(t + dur + 0.05);
     if (!ruido) return;
-    const src = this.ruido('branco');
+    const src = this.ruido('branco', 0, t);
     const f2 = ctx.createBiquadFilter();
     f2.type = 'lowpass';
     f2.frequency.value = 1200;
@@ -786,7 +827,7 @@ export class Audio {
         if (p.tambores) {
           const pad = p.tambores === 'guerra' ? [1, 0, 0, 1, 0, 0, 1, 0] : [1, 0, 1, 1, 0, 1, 0, 0];
           if (pad[pos]) this.tambor(t, p.tambores === 'guerra' ? 58 : 110, pos === 0 ? 0.55 : 0.32, destino, p.tambores === 'guerra' ? 0.45 : 0.2, 0.15);
-          if (p.tambores === 'guerra' && pos === 4) this.estalo(destino, 0.18, 3500, t, 0.08);
+          if (p.tambores === 'guerra' && pos === 4) this.estalo(destino, 0.1, 1800, t, 0.06);
         }
 
         // melodia: passeio aleatório na escala, com frases e respiros
@@ -897,7 +938,7 @@ export class Audio {
   }
 
   woosh(destino, t, dur = 0.5, de = 400, ate = 3000) {
-    const src = this.ruido('rosa');
+    const src = this.ruido('rosa', 0, t);
     const f = this.ctx.createBiquadFilter();
     f.type = 'bandpass';
     f.Q.value = 1.5;

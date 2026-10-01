@@ -13,8 +13,8 @@
     "dist:win": "electron-builder --win",
     "dist:linux": "electron-builder --linux",
     "dist:mac": "electron-builder --mac",
-    "voz:instalar": "node voz/chatterbox/instalar.js",
-    "voz:teste": "node voz/chatterbox/instalar.js --teste"
+    "voz:instalar": "node voz/instalar.js",
+    "voz:teste": "node voz/instalar.js --teste"
   },
   "devDependencies": {
     "electron": "^44.4.5",
@@ -50,12 +50,11 @@
     },
     "extraResources": [
       {
-        "from": "voz/chatterbox",
-        "to": "voz/chatterbox",
+        "from": "voz/CronicasVoz",
+        "to": "voz/CronicasVoz",
         "filter": [
-          "servico.py",
-          "requirements.txt",
-          "LEIA-ME.md"
+          "Program.cs",
+          "CronicasVoz.csproj"
         ]
       }
     ]

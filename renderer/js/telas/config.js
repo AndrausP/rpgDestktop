@@ -2,7 +2,6 @@ import { $, $$, esc, modal, toast } from '../ui.js';
 import { S, api, recarregarConfig } from '../app.js';
 import { ligarSom, audio, particulas } from '../cenario.js';
 import { PRESETS_VOZ, narrador } from '../vozes.js';
-import { gravarVoz } from '../gravador.js';
 
 const PROVEDORES = [
   { id: 'api', ic: '🧠', n: 'Claude API', d: 'Usa sua chave da API da Anthropic. Mais rápido; o mestre responde em JSON garantido via tool use.' },
@@ -63,27 +62,19 @@ export async function abrirConfig() {
 
     <h3 style="margin-top:24px">Voz do Mestre e dos personagens</h3>
     <div class="motores-voz">
-      ${[['chatterbox', '🎭 Chatterbox', 'Voz neural local da Resemble AI. Português e inglês, emoções e uma voz para cada personagem.'], ['sistema', '💻 Voz do sistema', 'Vozes do Windows. Nada para instalar.'], ['desligado', '🔇 Desligada', 'Só texto.']].map(([id, n, d]) => `
-        <div class="provedor ${(c.vozMotor || 'chatterbox') === id ? 'sel' : ''}" data-motor="${id}"><div><div class="n">${n}</div><div class="d">${d}</div></div></div>`).join('')}
+      ${[['kokoro', '🎭 Kokoro', 'Voz neural local (KokoroSharp, Kokoro TTS 82M). Pronúncia pt-BR nativa, uma voz para cada personagem.'], ['sistema', '💻 Voz do sistema', 'Vozes do Windows. Nada para instalar.'], ['desligado', '🔇 Desligada', 'Só texto.']].map(([id, n, d]) => `
+        <div class="provedor ${(c.vozMotor || 'kokoro') === id ? 'sel' : ''}" data-motor="${id}"><div><div class="n">${n}</div><div class="d">${d}</div></div></div>`).join('')}
     </div>
-    <div class="cfg-bloco" data-bloco-voz="chatterbox">
+    <div class="cfg-bloco" data-bloco-neural>
       <div class="linha-flex"><div class="status-voz" data-voz-status>…</div>
         <button class="btn pequeno" data-voz-instalar>📦 Instalar</button>
         <button class="btn pequeno primario" data-voz-iniciar>⚡ Carregar voz</button></div>
       <div class="barra-download oculto" data-voz-barra><i></i></div>
       <pre class="log-instalacao oculto" data-voz-log></pre>
-      <div class="ajuda">Instalar cria um Python só do app (precisa do <b>Python 3.11</b> no PC) com PyTorch e <code>chatterbox-tts</code> — com placa NVIDIA usa a GPU. Ao carregar pela 1ª vez, os modelos (~3 GB) são baixados e as vozes dos personagens são criadas.</div>
-      <div class="duas-col" style="margin-top:8px">
-        <div><label class="rotulo">Processar em</label>
-          <select class="campo" data-k="vozDispositivo">${[['auto', 'Automático (GPU se houver)'], ['cuda', 'GPU NVIDIA (CUDA)'], ['mps', 'GPU Apple (Metal)'], ['cpu', 'CPU (lento)']].map(([v, n]) => `<option value="${v}" ${(c.vozDispositivo || 'auto') === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
-        <div><label class="rotulo">Campanhas em inglês</label>
-          <select class="campo" data-k="vozIngles">${[['turbo', 'Turbo (rápido, com risos)'], ['multilingual', 'Multilíngue']].map(([v, n]) => `<option value="${v}" ${(c.vozIngles || 'turbo') === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
-      </div>
-      <div class="alternar"><span>🎭 Emoção nas falas (raiva, medo, sussurro…) como o mestre indicar</span><div class="switch ${c.vozEmocao !== false ? 'on' : ''}" data-sw="vozEmocao"></div></div>
-      <label class="rotulo">Biblioteca de vozes <span class="dica">troque qualquer voz por uma gravação de verdade (10–20 s)</span></label>
+      <div class="ajuda">Instalar compila o serviço de voz com o <b>.NET 8 SDK</b> (se faltar, o app tenta instalar pelo winget). Ao carregar pela 1ª vez, o modelo Kokoro (~320 MB) é baixado. Roda na CPU, sem placa de vídeo.</div>
+      <div class="alternar"><span>🎭 Emoção muda o ritmo das falas (grito acelera, tristeza desacelera)</span><div class="switch ${c.vozEmocao !== false ? 'on' : ''}" data-sw="vozEmocao"></div></div>
+      <label class="rotulo">Biblioteca de vozes <span class="dica">cada voz é uma mistura de vozes do Kokoro — a 1ª dá o sotaque, a 2ª colore o timbre</span></label>
       <div class="biblioteca-vozes" data-biblioteca>…</div>
-      <label class="rotulo">Python da voz (opcional)</label>
-      <input class="campo" data-k="vozPython" value="${esc(c.vozPython || '')}" placeholder="automático (ambiente criado pelo Instalar)">
     </div>
     <label class="rotulo">Voz do narrador</label>
     <div class="linha-flex">
@@ -130,15 +121,20 @@ export async function abrirConfig() {
     if (k === 'musica') audio.setMusica(c.musica);
     if (k === 'particulas') particulas.ativo = c.particulas;
   }));
-  const mostrarMotor = () => $$('[data-bloco-voz]', el).forEach((b) => b.classList.toggle('oculto', (c.vozMotor || 'chatterbox') !== b.dataset.blocoVoz));
+  const mostrarMotor = () => $('[data-bloco-neural]', el).classList.toggle('oculto', (c.vozMotor || 'kokoro') !== 'kokoro');
   mostrarMotor();
-  $$('[data-motor]', el).forEach((m) => m.addEventListener('click', () => {
+  $$('[data-motor]', el).forEach((m) => m.addEventListener('click', async () => {
     c.vozMotor = m.dataset.motor;
     c.vozAtiva = c.vozMotor !== 'desligado';
     $$('[data-motor]', el).forEach((x) => x.classList.toggle('sel', x === m));
     mostrarMotor();
+    if (c.vozMotor === 'kokoro') {
+      await api.config.salvar(c);
+      narrador.semServico = false;
+      api.voz.estado().then(pintarStatus).catch(() => {});
+    }
   }));
-  const NOMES_STATUS = { parado: '⚪ Parada', ausente: '⚠️ Não instalada', instalando: '📦 Instalando…', iniciando: '⏳ Iniciando…', baixando: '⬇️ Baixando modelos', semeando: '🎭 Criando vozes', pronto: '🟢 Pronta', erro: '🔴 Erro' };
+  const NOMES_STATUS = { parado: '⚪ Parada', ausente: '⚠️ Não instalada', instalando: '📦 Instalando…', iniciando: '⏳ Iniciando…', baixando: '⬇️ Baixando o modelo', pronto: '🟢 Pronta', erro: '🔴 Erro' };
   const pintarStatus = (e) => {
     const st = $('[data-voz-status]', el);
     if (!st) return;
@@ -173,51 +169,61 @@ export async function abrirConfig() {
     api.voz.iniciar().then(pintarStatus).catch((e) => pintarStatus({ status: 'erro', erro: e.message }));
   });
   $('[data-ouvir-narrador]', el).addEventListener('click', async () => {
-    if ((c.vozMotor || 'chatterbox') === 'desligado') { c.vozMotor = 'chatterbox'; }
+    if ((c.vozMotor || 'kokoro') === 'desligado') { c.vozMotor = 'kokoro'; }
     await api.config.salvar(c);
     narrador.configurar({ ...c, vozAtiva: true });
     narrador.onErro = (e) => toast(`Voz: ${e.message}`, 'erro', 6000);
     narrador.falar([{ quem: 'narrador', texto: 'A noite cai sobre Vel\'Darim. Os sinos da velha capela voltam a tocar, e você sente que algo antigo despertou.', emocao: 'misterioso' }], {});
   });
 
-  // biblioteca: cada voz pronta pode virar uma gravação sua (ou um arquivo importado)
+  // biblioteca: cada voz é uma mistura de 2 vozes do Kokoro (sotaque + timbre); dá para trocar e ouvir
+  const VOZES_PT = [['pm_santa', '♂ Santa (pt, grave)'], ['pm_alex', '♂ Alex (pt)'], ['pf_dora', '♀ Dora (pt)']];
+  const VOZES_COR = [['', '— sem mistura —'], ['bm_george', '♂ George (britânico)'], ['bm_fable', '♂ Fable (britânico)'], ['bm_lewis', '♂ Lewis (britânico)'], ['bm_daniel', '♂ Daniel (britânico)'],
+    ['am_onyx', '♂ Onyx (grave)'], ['am_fenrir', '♂ Fenrir (áspero)'], ['am_michael', '♂ Michael'], ['am_adam', '♂ Adam'], ['am_eric', '♂ Eric'], ['am_puck', '♂ Puck (moleque)'], ['am_echo', '♂ Echo'],
+    ['bf_emma', '♀ Emma (britânica)'], ['bf_isabella', '♀ Isabella (britânica)'], ['af_bella', '♀ Bella'], ['af_heart', '♀ Heart'], ['af_nicole', '♀ Nicole (sussurrada)'], ['af_sky', '♀ Sky'], ['af_kore', '♀ Kore'], ['pm_santa', '♂ Santa (pt)'], ['pm_alex', '♂ Alex (pt)'], ['pf_dora', '♀ Dora (pt)']];
   async function pintarBiblioteca() {
     const box = $('[data-biblioteca]', el);
     if (!box) return;
     let lista = [];
-    try { lista = await api.voz.vozes(); } catch { /* serviço parado */ }
-    const ROTULO = { sua: '🎙️ sua', gerada: '✨ gerada', nenhuma: '— ainda não criada' };
-    box.innerHTML = lista.map((v) => `<div class="voz-item ${v.fonte}" data-id="${v.id}">
-        <span class="n">${esc(v.nome)}</span><span class="fonte">${ROTULO[v.fonte]}</span>
+    try { lista = await api.voz.vozes(); } catch { /* ok */ }
+    const opt = (lst, v) => lst.map(([id, n]) => `<option value="${id}" ${id === v ? 'selected' : ''}>${n}</option>`).join('');
+    box.innerHTML = lista.map((v) => `<div class="voz-item ${v.trocada ? 'sua' : ''}" data-id="${v.id}">
+        <span class="n">${esc(v.nome)}</span>
+        <select class="campo mini" data-base title="Voz principal (sotaque)">${opt(VOZES_PT, v.mix[0]?.[0])}</select>
+        <select class="campo mini" data-cor title="Mistura (timbre)">${opt(VOZES_COR, v.mix[1]?.[0] || '')}</select>
         <button class="btn pequeno" data-a="ouvir" title="Ouvir">▶</button>
-        <button class="btn pequeno" data-a="gravar" title="Gravar pelo microfone">🎙️</button>
-        <button class="btn pequeno" data-a="importar" title="Importar arquivo de áudio">📂</button>
-        ${v.fonte === 'sua' ? '<button class="btn pequeno" data-a="remover" title="Voltar para a voz gerada">↺</button>' : ''}
-      </div>`).join('') + '<div class="linha-flex" style="margin-top:6px"><button class="btn pequeno" data-abrir-vozes>📁 Pasta _artes/vozes</button><span class="ajuda" style="margin:0">Um arquivo <b>_artes/vozes/&lt;nome-do-npc&gt;.wav</b> dá voz própria a um NPC em todas as campanhas.</span></div>';
-    $$('.voz-item', box).forEach((it) => it.addEventListener('click', async (ev) => {
-      const a = ev.target.closest('[data-a]')?.dataset.a;
+        ${v.trocada ? '<button class="btn pequeno" data-a="padrao" title="Voltar ao padrão">↺</button>' : ''}
+      </div>`).join('');
+    $$('.voz-item', box).forEach((it) => {
       const id = it.dataset.id;
-      if (!a) return;
-      try {
-        if (a === 'ouvir') {
+      const salvarMix = async () => {
+        const base = $('[data-base]', it).value;
+        const cor = $('[data-cor]', it).value;
+        c.vozMixes = { ...(c.vozMixes || {}), [id]: cor && cor !== base ? [[base, 0.7], [cor, 0.3]] : [[base, 1]] };
+        await api.config.salvar(c);
+        it.classList.add('sua');
+      };
+      $$('select', it).forEach((sel) => sel.addEventListener('change', salvarMix));
+      it.addEventListener('click', async (ev) => {
+        const a = ev.target.closest('[data-a]')?.dataset.a;
+        if (!a) return;
+        try {
+          if (a === 'padrao') {
+            const m = { ...(c.vozMixes || {}) };
+            delete m[id];
+            c.vozMixes = m;
+            await api.config.salvar(c);
+            return pintarBiblioteca();
+          }
           await api.config.salvar(c);
-          narrador.configurar({ ...c, vozAtiva: true, vozMotor: c.vozMotor === 'desligado' ? 'chatterbox' : c.vozMotor });
+          narrador.configurar({ ...c, vozAtiva: true, vozMotor: c.vozMotor === 'desligado' ? 'kokoro' : c.vozMotor });
           narrador.onErro = (e) => toast(`Voz: ${e.message}`, 'erro', 6000);
           const t = /^narrad/.test(id) ? 'Esta é a voz que conta a sua história.' : 'Ei, forasteiro! Você não é daqui, é?';
           if (/^narrad/.test(id)) narrador.falar([{ quem: 'narrador', texto: t }], {});
           else narrador.falar([{ quem: 'heroi', texto: t, emocao: 'neutro' }], { vozHeroi: id });
-          return;
-        }
-        if (a === 'gravar') {
-          const wav = await gravarVoz({ titulo: `Voz: ${PRESETS_VOZ[id]?.nome || id}` });
-          if (wav) await api.voz.salvarRef(id, wav);
-        }
-        if (a === 'importar') await api.voz.importarRef(id);
-        if (a === 'remover') await api.voz.removerRef(id);
-        pintarBiblioteca();
-      } catch (e) { toast(e.message, 'erro'); }
-    }));
-    $('[data-abrir-vozes]', box).addEventListener('click', () => api.voz.abrirPasta());
+        } catch (e) { toast(e.message, 'erro'); }
+      });
+    });
   }
   pintarBiblioteca();
   $$('[data-testar-som]', el).forEach((b) => b.addEventListener('click', () => {

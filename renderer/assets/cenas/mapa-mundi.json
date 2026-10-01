@@ -1,0 +1,734 @@
+{
+  "version": 1,
+  "image": {
+    "file": "mapa-mundi-dark-fantasy-4k.png",
+    "width": 3840,
+    "height": 2160
+  },
+  "coordinates": {
+    "unit": "pixel",
+    "origin": "top-left",
+    "note": "Pontos aproximados sobre a imagem original. Escale x e y pela largura e altura exibidas para desenhar em outros tamanhos."
+  },
+  "locations": [
+    {
+      "id": "arvore-ancestral",
+      "name": "Árvore Ancestral",
+      "type": "landmark",
+      "x": 525,
+      "y": 320
+    },
+    {
+      "id": "cascatas-esmeralda",
+      "name": "Cascatas Esmeralda",
+      "type": "landmark",
+      "x": 775,
+      "y": 340
+    },
+    {
+      "id": "vila-do-bosque",
+      "name": "Vila do Bosque",
+      "type": "settlement",
+      "x": 1045,
+      "y": 405
+    },
+    {
+      "id": "passagem-das-neves",
+      "name": "Passagem das Neves",
+      "type": "pass",
+      "x": 1490,
+      "y": 320
+    },
+    {
+      "id": "cidadela-glacial",
+      "name": "Cidadela Glacial",
+      "type": "city",
+      "x": 1760,
+      "y": 175
+    },
+    {
+      "id": "catedral-de-gelo",
+      "name": "Catedral de Gelo",
+      "type": "landmark",
+      "x": 2895,
+      "y": 235
+    },
+    {
+      "id": "porto-ocidental",
+      "name": "Porto Ocidental",
+      "type": "port",
+      "x": 550,
+      "y": 930
+    },
+    {
+      "id": "farol-ocidental",
+      "name": "Farol Ocidental",
+      "type": "landmark",
+      "x": 205,
+      "y": 860
+    },
+    {
+      "id": "arena-antiga",
+      "name": "Arena Antiga",
+      "type": "landmark",
+      "x": 1275,
+      "y": 765
+    },
+    {
+      "id": "vila-do-rio",
+      "name": "Vila do Rio",
+      "type": "settlement",
+      "x": 1460,
+      "y": 930
+    },
+    {
+      "id": "capital-das-pontes",
+      "name": "Capital das Pontes",
+      "type": "city",
+      "x": 1860,
+      "y": 870
+    },
+    {
+      "id": "aldeia-do-pantano",
+      "name": "Aldeia do Pântano",
+      "type": "settlement",
+      "x": 2515,
+      "y": 815
+    },
+    {
+      "id": "necropolis",
+      "name": "Necrópole",
+      "type": "city",
+      "x": 3255,
+      "y": 600
+    },
+    {
+      "id": "vulcao-rubro",
+      "name": "Vulcão Rubro",
+      "type": "landmark",
+      "x": 3530,
+      "y": 210
+    },
+    {
+      "id": "travessia-do-deserto",
+      "name": "Travessia do Deserto",
+      "type": "pass",
+      "x": 2270,
+      "y": 1200
+    },
+    {
+      "id": "cidade-do-oasis",
+      "name": "Cidade do Oásis",
+      "type": "city",
+      "x": 2945,
+      "y": 1190
+    },
+    {
+      "id": "templo-das-dunas",
+      "name": "Templo das Dunas",
+      "type": "landmark",
+      "x": 3495,
+      "y": 1175
+    },
+    {
+      "id": "fortaleza-do-sul",
+      "name": "Fortaleza do Sul",
+      "type": "city",
+      "x": 360,
+      "y": 1500
+    },
+    {
+      "id": "bosque-meridional",
+      "name": "Bosque Meridional",
+      "type": "landmark",
+      "x": 975,
+      "y": 1255
+    },
+    {
+      "id": "ilhas-dos-corsarios",
+      "name": "Ilhas dos Corsários",
+      "type": "island",
+      "x": 1125,
+      "y": 1750
+    },
+    {
+      "id": "templo-da-selva",
+      "name": "Templo da Selva",
+      "type": "island",
+      "x": 1840,
+      "y": 1750
+    },
+    {
+      "id": "ilha-da-caveira",
+      "name": "Ilha da Caveira",
+      "type": "island",
+      "x": 2335,
+      "y": 1830
+    },
+    {
+      "id": "cidade-submersa",
+      "name": "Cidade Submersa",
+      "type": "ruin",
+      "x": 2805,
+      "y": 1855
+    },
+    {
+      "id": "ilhas-orientais",
+      "name": "Ilhas Orientais",
+      "type": "island",
+      "x": 3365,
+      "y": 1780
+    },
+    {
+      "id": "redemoinho-abissal",
+      "name": "Redemoinho Abissal",
+      "type": "hazard",
+      "x": 480,
+      "y": 1935
+    }
+  ],
+  "routes": [
+    {
+      "id": "trilha-das-cascatas",
+      "name": "Trilha das Cascatas",
+      "mode": "land",
+      "from": "arvore-ancestral",
+      "to": "cascatas-esmeralda",
+      "points": [
+        [
+          525,
+          320
+        ],
+        [
+          645,
+          335
+        ],
+        [
+          775,
+          340
+        ]
+      ]
+    },
+    {
+      "id": "caminho-do-bosque",
+      "name": "Caminho do Bosque",
+      "mode": "land",
+      "from": "cascatas-esmeralda",
+      "to": "vila-do-bosque",
+      "points": [
+        [
+          775,
+          340
+        ],
+        [
+          900,
+          425
+        ],
+        [
+          1045,
+          405
+        ]
+      ]
+    },
+    {
+      "id": "subida-das-neves",
+      "name": "Subida das Neves",
+      "mode": "land",
+      "from": "vila-do-bosque",
+      "to": "passagem-das-neves",
+      "points": [
+        [
+          1045,
+          405
+        ],
+        [
+          1230,
+          355
+        ],
+        [
+          1490,
+          320
+        ]
+      ]
+    },
+    {
+      "id": "estrada-glacial",
+      "name": "Estrada Glacial",
+      "mode": "land",
+      "from": "passagem-das-neves",
+      "to": "cidadela-glacial",
+      "points": [
+        [
+          1490,
+          320
+        ],
+        [
+          1620,
+          255
+        ],
+        [
+          1760,
+          175
+        ]
+      ]
+    },
+    {
+      "id": "rota-do-gelo",
+      "name": "Rota do Gelo",
+      "mode": "land",
+      "from": "cidadela-glacial",
+      "to": "catedral-de-gelo",
+      "points": [
+        [
+          1760,
+          175
+        ],
+        [
+          2090,
+          275
+        ],
+        [
+          2460,
+          255
+        ],
+        [
+          2895,
+          235
+        ]
+      ]
+    },
+    {
+      "id": "estrada-da-arena",
+      "name": "Estrada da Arena",
+      "mode": "land",
+      "from": "vila-do-bosque",
+      "to": "arena-antiga",
+      "points": [
+        [
+          1045,
+          405
+        ],
+        [
+          1130,
+          585
+        ],
+        [
+          1275,
+          765
+        ]
+      ]
+    },
+    {
+      "id": "estrada-do-porto",
+      "name": "Estrada do Porto",
+      "mode": "land",
+      "from": "arena-antiga",
+      "to": "porto-ocidental",
+      "points": [
+        [
+          1275,
+          765
+        ],
+        [
+          1040,
+          770
+        ],
+        [
+          800,
+          830
+        ],
+        [
+          550,
+          930
+        ]
+      ]
+    },
+    {
+      "id": "caminho-do-rio",
+      "name": "Caminho do Rio",
+      "mode": "land",
+      "from": "arena-antiga",
+      "to": "vila-do-rio",
+      "points": [
+        [
+          1275,
+          765
+        ],
+        [
+          1350,
+          850
+        ],
+        [
+          1460,
+          930
+        ]
+      ]
+    },
+    {
+      "id": "estrada-da-capital",
+      "name": "Estrada da Capital",
+      "mode": "land",
+      "from": "vila-do-rio",
+      "to": "capital-das-pontes",
+      "points": [
+        [
+          1460,
+          930
+        ],
+        [
+          1640,
+          820
+        ],
+        [
+          1860,
+          870
+        ]
+      ]
+    },
+    {
+      "id": "caminho-do-pantano",
+      "name": "Caminho do Pântano",
+      "mode": "land",
+      "from": "capital-das-pontes",
+      "to": "aldeia-do-pantano",
+      "points": [
+        [
+          1860,
+          870
+        ],
+        [
+          2160,
+          780
+        ],
+        [
+          2515,
+          815
+        ]
+      ]
+    },
+    {
+      "id": "trilha-sombria",
+      "name": "Trilha Sombria",
+      "mode": "land",
+      "from": "aldeia-do-pantano",
+      "to": "necropolis",
+      "points": [
+        [
+          2515,
+          815
+        ],
+        [
+          2830,
+          710
+        ],
+        [
+          3255,
+          600
+        ]
+      ]
+    },
+    {
+      "id": "estrada-das-dunas",
+      "name": "Estrada das Dunas",
+      "mode": "land",
+      "from": "capital-das-pontes",
+      "to": "travessia-do-deserto",
+      "points": [
+        [
+          1860,
+          870
+        ],
+        [
+          2080,
+          1035
+        ],
+        [
+          2270,
+          1200
+        ]
+      ]
+    },
+    {
+      "id": "rota-do-oasis",
+      "name": "Rota do Oásis",
+      "mode": "land",
+      "from": "travessia-do-deserto",
+      "to": "cidade-do-oasis",
+      "points": [
+        [
+          2270,
+          1200
+        ],
+        [
+          2580,
+          1180
+        ],
+        [
+          2945,
+          1190
+        ]
+      ]
+    },
+    {
+      "id": "caminho-do-templo",
+      "name": "Caminho do Templo",
+      "mode": "land",
+      "from": "cidade-do-oasis",
+      "to": "templo-das-dunas",
+      "points": [
+        [
+          2945,
+          1190
+        ],
+        [
+          3240,
+          1100
+        ],
+        [
+          3495,
+          1175
+        ]
+      ]
+    },
+    {
+      "id": "trilha-meridional",
+      "name": "Trilha Meridional",
+      "mode": "land",
+      "from": "fortaleza-do-sul",
+      "to": "bosque-meridional",
+      "points": [
+        [
+          360,
+          1500
+        ],
+        [
+          600,
+          1390
+        ],
+        [
+          975,
+          1255
+        ]
+      ]
+    },
+    {
+      "id": "estrada-da-floresta",
+      "name": "Estrada da Floresta",
+      "mode": "land",
+      "from": "bosque-meridional",
+      "to": "arena-antiga",
+      "points": [
+        [
+          975,
+          1255
+        ],
+        [
+          1120,
+          1040
+        ],
+        [
+          1275,
+          765
+        ]
+      ]
+    },
+    {
+      "id": "canal-do-farol",
+      "name": "Canal do Farol",
+      "mode": "sea",
+      "from": "porto-ocidental",
+      "to": "farol-ocidental",
+      "points": [
+        [
+          550,
+          930
+        ],
+        [
+          380,
+          950
+        ],
+        [
+          205,
+          860
+        ]
+      ]
+    },
+    {
+      "id": "costa-ocidental",
+      "name": "Costa Ocidental",
+      "mode": "sea",
+      "from": "porto-ocidental",
+      "to": "fortaleza-do-sul",
+      "points": [
+        [
+          550,
+          930
+        ],
+        [
+          420,
+          1130
+        ],
+        [
+          320,
+          1330
+        ],
+        [
+          360,
+          1500
+        ]
+      ]
+    },
+    {
+      "id": "mar-dos-corsarios",
+      "name": "Mar dos Corsários",
+      "mode": "sea",
+      "from": "fortaleza-do-sul",
+      "to": "ilhas-dos-corsarios",
+      "points": [
+        [
+          360,
+          1500
+        ],
+        [
+          650,
+          1650
+        ],
+        [
+          1125,
+          1750
+        ]
+      ]
+    },
+    {
+      "id": "canal-da-selva",
+      "name": "Canal da Selva",
+      "mode": "sea",
+      "from": "ilhas-dos-corsarios",
+      "to": "templo-da-selva",
+      "points": [
+        [
+          1125,
+          1750
+        ],
+        [
+          1460,
+          1830
+        ],
+        [
+          1840,
+          1750
+        ]
+      ]
+    },
+    {
+      "id": "rota-da-caveira",
+      "name": "Rota da Caveira",
+      "mode": "sea",
+      "from": "templo-da-selva",
+      "to": "ilha-da-caveira",
+      "points": [
+        [
+          1840,
+          1750
+        ],
+        [
+          2090,
+          1770
+        ],
+        [
+          2335,
+          1830
+        ]
+      ]
+    },
+    {
+      "id": "mar-das-ruinas",
+      "name": "Mar das Ruínas",
+      "mode": "sea",
+      "from": "ilha-da-caveira",
+      "to": "cidade-submersa",
+      "points": [
+        [
+          2335,
+          1830
+        ],
+        [
+          2570,
+          1770
+        ],
+        [
+          2805,
+          1855
+        ]
+      ]
+    },
+    {
+      "id": "rota-oriental",
+      "name": "Rota Oriental",
+      "mode": "sea",
+      "from": "cidade-submersa",
+      "to": "ilhas-orientais",
+      "points": [
+        [
+          2805,
+          1855
+        ],
+        [
+          3100,
+          1790
+        ],
+        [
+          3365,
+          1780
+        ]
+      ]
+    },
+    {
+      "id": "rota-do-redemoinho",
+      "name": "Rota do Redemoinho",
+      "mode": "sea",
+      "from": "fortaleza-do-sul",
+      "to": "redemoinho-abissal",
+      "points": [
+        [
+          360,
+          1500
+        ],
+        [
+          320,
+          1730
+        ],
+        [
+          480,
+          1935
+        ]
+      ]
+    },
+    {
+      "id": "trilha-das-cinzas",
+      "name": "Trilha das Cinzas",
+      "mode": "land",
+      "from": "necropolis",
+      "to": "vulcao-rubro",
+      "points": [
+        [
+          3255,
+          600
+        ],
+        [
+          3380,
+          420
+        ],
+        [
+          3530,
+          210
+        ]
+      ]
+    }
+  ],
+  "travel": {
+    "landPxPerDay": 320,
+    "seaPxPerDay": 480,
+    "note": "Escala de viagem para o jogo: pixels da imagem 4k percorridos por dia de viagem (a pé/cavalo em terra, navio no mar)."
+  }
+}

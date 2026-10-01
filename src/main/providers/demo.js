@@ -10,7 +10,9 @@ const INIMIGOS = [
   { nome: 'Bandido Mascarado', desc: 'Salteador de estrada', retrato: 'bandido', vidaMax: 12 },
   { nome: 'Bromir', desc: 'Chefe dos bandidos da estrada', retrato: 'bromir', vidaMax: 16 },
   { nome: 'Orc Saqueador', desc: 'Orc brutal com machado', retrato: 'orc', vidaMax: 18 },
-  { nome: 'Lobo Sombrio', desc: 'Lobo de olhos vermelhos', vidaMax: 14 },
+  { nome: 'Lobo Sombrio', desc: 'Lobo de olhos vermelhos', retrato: 'cao-de-muitas-sombras', vidaMax: 14 },
+  { nome: 'Pastor de Ossos', desc: 'Esqueleto alto com lanterna e cajado', retrato: 'pastor-de-ossos', vidaMax: 16 },
+  { nome: 'Aranha-Sino', desc: 'Aranha gigante com um sino no lugar do corpo', retrato: 'aranha-sino', vidaMax: 20 },
   { nome: 'Cultista do Sino', desc: 'Fanático mascarado', retrato: 'cultista', vidaMax: 10 },
 ];
 
@@ -138,6 +140,7 @@ function turno({ slug, acao, state }) {
       cena: 'taverna',
       falante: 'Brom',
       local: 'Vila de Valen',
+      local_mapa: 'Vila do Rio',
       periodo: 'noite',
       dia: 1,
       capitulo: 'O Sino Silencioso',
@@ -149,6 +152,20 @@ function turno({ slug, acao, state }) {
         { tipo: 'item_ganho', nome: 'Caneca de Hidromel', icone: '🍺', pasta: 'consumiveis', descricao: 'Por conta da casa', raridade: 'comum' },
       ],
       sugestoes: ['Aceitar o trabalho', 'Perguntar sobre a capela', 'Ouvir o bardo'],
+      enredo: {
+        titulo: 'O Sino Silencioso',
+        premissa: 'O sino da capela abandonada volta a tocar à meia-noite e, a cada badalada, alguém da Vila de Valen some sem deixar rastro.',
+        antagonista: { nome: 'Irmão Malrec', objetivo: 'acordar o Sapo-Catedral adormecido sob a capela com o sangue dos desaparecidos', segredo: 'é o sacristão que todos julgam morto há dez anos' },
+        segredos: ['Brom já foi membro do culto e fugiu', 'Os desaparecidos ainda estão vivos na cripta, dormindo', 'O sino só pode ser calado com a Chave de Osso'],
+        atos: [
+          { titulo: 'As Badaladas', objetivo: 'Descobrir quem toca o sino e para onde vão os desaparecidos', virada: 'Encontrar a entrada da cripta sob o altar' },
+          { titulo: 'Sob a Pedra', objetivo: 'Atravessar a cripta, achar a Chave de Osso e os desaparecidos', virada: 'Malrec se revela e inicia o ritual' },
+          { titulo: 'O Despertar', objetivo: 'Impedir o ritual antes da décima terceira badalada', virada: 'O Sapo-Catedral desperta — ou é selado para sempre' },
+        ],
+        ganchos: ['Por que Brom sabe tanto sobre a capela?', 'Quem foi o último a subir na torre do sino?'],
+        final: 'O herói cala o sino e salva a vila — ou o sino toca a última vez e a capela afunda com a criatura.',
+      },
+      memoria: { resumo: `${p.nome} chegou ao Javali Dourado; Brom ofereceu 50 moedas para investigar o sino da capela.`, fatos: ['O sino da capela tocou sozinho três vezes', 'Ninguém que foi olhar voltou'] },
     };
   }
 
@@ -260,13 +277,19 @@ function turno({ slug, acao, state }) {
   }
 
   const cena = pick(CENAS.filter((c) => c.tema !== state.campanha.tema));
-  return { narrativa: cena.texto, roteiro: cena.roteiro, tema: cena.tema, cena: cena.cena, falante: cena.falante || '', local: cena.local, periodo: cena.periodo || 'dia', capitulo: cena.capitulo, eventos: cena.eventos, sugestoes: cena.sugestoes };
+  // viagem pelo mapa: o demo chega ao destino pedido
+  const destino = String(acao || '').match(/viajo at[eé] ([^.]+)\./i)?.[1];
+  return { narrativa: cena.texto, roteiro: cena.roteiro, tema: cena.tema, cena: cena.cena, falante: cena.falante || '', local: destino || cena.local, local_mapa: destino || undefined, periodo: cena.periodo || 'dia', capitulo: cena.capitulo, eventos: cena.eventos, sugestoes: cena.sugestoes };
 }
 
 async function turnoAsync(args) {
   await new Promise((res) => setTimeout(res, 500 + Math.random() * 700)); // "pensando"
   const t = turno(args);
   if (t.falante === undefined) t.falante = ''; // fora de combate, ninguém em destaque
+  if (!t.memoria) {
+    const base = (t.roteiro?.find((r) => r.quem === 'narrador')?.texto || t.narrativa || '').replace(/\*\*/g, '');
+    t.memoria = { resumo: base.split(/(?<=[.!?])\s/)[0].split(/\s+/).slice(0, 20).join(' ') };
+  }
   return { turno: t };
 }
 

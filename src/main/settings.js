@@ -17,17 +17,17 @@ const PADRAO = {
   volAmbiente: 0.6,
   volEfeitos: 0.8,
   particulas: true,
-  // voz (Chatterbox / voz do sistema)
-  vozMotor: 'chatterbox', // 'chatterbox' | 'sistema' | 'desligado'
+  // voz (KokoroSharp / voz do sistema)
+  vozMotor: 'kokoro', // 'kokoro' | 'sistema' | 'desligado'
   vozAtiva: true,
   vozNarrador: 'narrador-grave',
   vozVelocidade: 1,
   vozLerJogador: false,
   volVoz: 0.95,
-  vozDispositivo: 'auto', // 'auto' | 'cuda' | 'mps' | 'cpu'
-  vozIngles: 'turbo', // 'turbo' (rápido, aceita [laugh] [sigh]…) | 'multilingual'
-  vozEmocao: true, // o tom de cada fala segue a emoção indicada pelo mestre
-  vozPython: '', // opcional: python de um ambiente que já tenha o chatterbox-tts
+  vozEmocao: true, // a emoção de cada fala muda o ritmo da voz
+  vozMixes: {}, // preset → mistura de vozes do Kokoro escolhida pelo jogador
+  vozComando: '', // opcional: comando manual para iniciar o serviço (ex.: "dotnet C:\\...\\CronicasVoz.dll")
+  vozModelo: '', // opcional: caminho de um kokoro.onnx já baixado
 };
 
 function arquivo() {
@@ -55,9 +55,9 @@ async function carregar() {
     }
   }
   delete cfg.apiKeyEnc;
-  if (cfg.vozMotor === 'kokoro') cfg.vozMotor = 'chatterbox'; // versões antigas usavam KokoroSharp
-  delete cfg.vozComando;
-  delete cfg.vozModelo;
+  // versões que passaram por Chatterbox/Qwen3-TTS voltam para o KokoroSharp
+  if (!['kokoro', 'sistema', 'desligado'].includes(cfg.vozMotor)) cfg.vozMotor = 'kokoro';
+  for (const k of ['vozDispositivo', 'vozIngles', 'vozPython', 'vozPythonQwen', 'vozQwenModelo', 'vozQwenFalantes', 'vozMigrouQwen']) delete cfg[k];
   return cfg;
 }
 

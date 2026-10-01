@@ -3,9 +3,10 @@ import { S, api, irPara } from '../app.js';
 import { TEMAS } from '../temas.js';
 import { setTema, setCena } from '../cenario.js';
 import { setBarra } from '../barra.js';
-import { urlCena, urlRetrato, cenaDoTema } from '../arte.js';
+import { urlCena, urlRetrato, cenaDoTema, iconeHtml } from '../arte.js';
 import { abrirConfig } from './config.js';
 import { urlRetratoHeroi } from '../heroi.js';
+import { entrarNaSala } from '../coop.js';
 
 const NOME_PROV = { api: '🧠 Claude API', 'claude-code': '⌨️ Claude Code', demo: '🎭 Demonstração' };
 
@@ -27,6 +28,8 @@ export function telaInicio(raiz) {
 
   const extra = h(`<div class="linha-flex" style="gap:10px">
     <div class="info-barra" data-prov title="Quem narra suas histórias"><span class="sol">🪶</span><div><div class="l1">Mestre</div><div class="l2" data-prov-nome></div></div></div>
+    <button class="btn inicio-compendio" data-compendio title="Consultar fichas de itens e monstros">${iconeHtml('bestiario', 'mini')} <span>Compêndio</span></button>
+    <button class="btn" data-coop title="Entrar na sala co-op de um amigo">🤝 Entrar numa sala</button>
     <button class="btn icone" data-artes title="Pasta das suas artes">🖼️</button>
     <button class="btn icone" data-pasta title="Pasta das campanhas">📁</button>
     <button class="btn icone" data-cfg title="Configurações">⚙️</button>
@@ -60,7 +63,7 @@ export function telaInicio(raiz) {
           <div class="info">
             <div class="av">${ret ? `<img src="${ret}" alt="">` : esc(p.icone || '⚔️')}</div>
             <div class="nome">${esc(c.nome)}</div>
-            <div class="cap">${esc(c.capitulo || '')}${c.local ? ` · ${esc(c.local)}` : ''}${c.idioma === 'en' ? ' · 🇺🇸' : ''}</div>
+            <div class="cap">${esc(c.capitulo || '')}${c.local ? ` · ${esc(c.local)}` : ''}${c.idioma === 'en' ? ' · EN' : ''}</div>
             <div class="heroi"><b>${esc(p.nome || '?')}</b> <span class="suave">· ${esc(p.raca || '')} ${esc(p.classe || '')} · Nv ${p.nivel || 1}</span></div>
             <div class="mini-vida"><i style="width:${pct}%"></i></div>
             <div class="rodape"><span>Dia ${c.dia || 1} · ${c.turno} turnos</span><span>${tempoRelativo(c.atualizadaEm)}</span></div>
@@ -89,6 +92,8 @@ export function telaInicio(raiz) {
   $('[data-cfg]', extra).addEventListener('click', async () => {
     if (await abrirConfig()) { atualizarProv(); carregar(); }
   });
+  $('[data-coop]', extra).addEventListener('click', () => entrarNaSala());
+  $('[data-compendio]', extra).addEventListener('click', () => irPara('compendio'));
   $('[data-pasta]', extra).addEventListener('click', () => api.campanhas.abrirPasta(null));
   $('[data-artes]', extra).addEventListener('click', () => api.catalogo.abrirPasta());
   carregar();

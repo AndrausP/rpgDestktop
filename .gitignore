@@ -1,6 +1,7 @@
 node_modules/
 dist/
 *.tmp
+__pycache__/
 voz/publish/
 voz/CronicasVoz/bin/
 voz/CronicasVoz/obj/

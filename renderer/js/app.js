@@ -2,6 +2,7 @@ import { setTema, audio, particulas, ligarSom, limparPalco } from './cenario.js'
 import { telaInicio } from './telas/inicio.js';
 import { telaJogo } from './telas/jogo.js';
 import { telaCriacao } from './telas/criacao.js';
+import { telaCompendio } from './telas/compendio.js';
 import { toast } from './ui.js';
 import { iniciarBarra } from './barra.js';
 import { carregarCatalogo } from './arte.js';
@@ -33,6 +34,7 @@ export function irPara(nome, arg) {
   if (nome === 'inicio') S.tela = telaInicio(app);
   if (nome === 'jogo') S.tela = telaJogo(app, arg);
   if (nome === 'criacao') S.tela = telaCriacao(app, arg);
+  if (nome === 'compendio') S.tela = telaCompendio(app, arg);
 }
 
 async function main() {

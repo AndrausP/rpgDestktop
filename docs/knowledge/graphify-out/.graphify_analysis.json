@@ -1,0 +1,88 @@
+{
+  "communities": {
+    "0": [
+      "errors_aprendidos_background_image_css",
+      "errors_aprendidos_border_image_slice",
+      "errors_aprendidos_padding_transparente"
+    ],
+    "1": [
+      "pending_validation_kit_interface_dark_fantasy",
+      "pending_validation_validacao_visual_funcional",
+      "pending_validation_verificacoes_estaticas"
+    ],
+    "2": [
+      "pending_validation_politica_file",
+      "pending_validation_wizard_qa_static",
+      "pending_validation_wizard_visual"
+    ]
+  },
+  "cohesion": {
+    "0": 0.6666666666666666,
+    "1": 0.6666666666666666,
+    "2": 0.6666666666666666
+  },
+  "gods": [
+    {
+      "id": "pending_validation_validacao_visual_funcional",
+      "label": "Valida\u00e7\u00e3o visual e funcional pendente",
+      "degree": 4
+    },
+    {
+      "id": "pending_validation_wizard_visual",
+      "label": "Valida\u00e7\u00e3o visual e interativa do wizard pendente",
+      "degree": 3
+    },
+    {
+      "id": "errors_aprendidos_border_image_slice",
+      "label": "border-image-slice invis\u00edvel",
+      "degree": 2
+    },
+    {
+      "id": "pending_validation_politica_file",
+      "label": "Pol\u00edtica file:// do navegador",
+      "degree": 2
+    },
+    {
+      "id": "errors_aprendidos_padding_transparente",
+      "label": "Padding transparente dos PNGs",
+      "degree": 1
+    },
+    {
+      "id": "errors_aprendidos_background_image_css",
+      "label": "background-image e borda CSS",
+      "degree": 1
+    },
+    {
+      "id": "pending_validation_verificacoes_estaticas",
+      "label": "Verifica\u00e7\u00f5es est\u00e1ticas do QA",
+      "degree": 1
+    },
+    {
+      "id": "pending_validation_kit_interface_dark_fantasy",
+      "label": "Kit de interface dark fantasy",
+      "degree": 1
+    },
+    {
+      "id": "pending_validation_wizard_qa_static",
+      "label": "QA est\u00e1tica do wizard aprovada",
+      "degree": 1
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Valida\u00e7\u00e3o visual e funcional pendente",
+      "target": "Pol\u00edtica file:// do navegador",
+      "source_files": [
+        "pending-validation.md",
+        "pending-validation.md"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "note": "Bridges community 1 \u2192 community 2"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}

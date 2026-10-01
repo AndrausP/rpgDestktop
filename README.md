@@ -1,5 +1,7 @@
 # Crônicas — RPG desktop com Mestre IA
 
+Documentação do sistema e índice oficial: [docs/README.md](docs/README.md).
+
 App desktop (Electron) para jogar RPG solo com um Mestre de IA. Tem ficha, inventário organizado em **pastas de verdade no disco**, missões, NPCs, lugares, dados, e o **tema visual (cores, partículas e som) muda conforme a história avança**.
 
 ## Rodar
@@ -70,7 +72,7 @@ Eventos: `dano, cura, mana, xp, ouro, item_ganho, item_perdido, status_add, stat
 
 ## Artes (cenários, retratos, itens)
 
-O app já vem com 20 cenários, o mapa do mundo, 20 retratos genéricos e um **elenco de 40 NPCs nomeados** (Garrick Barrilvelho, Edric IV, Morwenna, Thrag Pedranegra, Mira Vell…), cada um com busto e arte de corpo inteiro com fundo transparente. O Mestre recebe o elenco com função e aparência e pode usá-los pelo nome; o card do NPC em cena mostra a arte de corpo inteiro, e cada um já tem uma voz combinando. O fundo da tela é sempre a arte do lugar onde o jogador está. O Mestre escolhe a `cena` e o `falante` (o NPC em destaque, que aparece com retrato e barra de vida quando é inimigo) e dá um `retrato` para cada NPC.
+O app já vem com 30 cenários, 10 mapas de batalha, o mapa do mundo, 20 retratos genéricos, um **bestiário de 20 monstros** (Boi do Abismo, Aranha-Sino, Viúva da Névoa…) e um **elenco de 40 NPCs nomeados** (Garrick Barrilvelho, Edric IV, Morwenna, Thrag Pedranegra, Mira Vell…), cada um com busto e arte de corpo inteiro com fundo transparente. O Mestre recebe o elenco com função e aparência e pode usá-los pelo nome; o card do NPC em cena mostra a arte de corpo inteiro, e cada um já tem uma voz combinando. O fundo da tela é sempre a arte do lugar onde o jogador está. O Mestre escolhe a `cena` e o `falante` (o NPC em destaque, que aparece com retrato e barra de vida quando é inimigo) e dá um `retrato` para cada NPC.
 
 **Para trazer suas próprias imagens**, solte-as em `Documentos/Cronicas RPG/_artes/` (a pasta abre pelo botão 🖼️ na tela inicial). O nome do arquivo é o que liga a arte:
 
@@ -97,28 +99,34 @@ Tudo é gerado na hora pelo Web Audio (nenhum arquivo de áudio):
 - **Efeitos:** dado rolando na mesa e o toque final, golpe com metal, cura cintilante, moedas, mana, XP, missão, inimigo surgindo, derrota, crítico, desastre, fanfarra de nível e de item por raridade, e a pena riscando o pergaminho enquanto o Mestre escreve.
 - **Mixer** em ⚙️ Configurações: geral, música, ambiente e efeitos, cada um com um botão ▶ para ouvir. Tudo passa por uma reverberação de sala e um compressor.
 
-## Voz: Mestre e personagens falando (Chatterbox)
+## Voz: Mestre e personagens falando (Kokoro)
 
-O Mestre narra e cada personagem fala com a própria voz; você só digita. A síntese é local, com o [Chatterbox](https://github.com/resemble-ai/chatterbox) da Resemble AI:
-- **Português** (e mais 21 idiomas): `ChatterboxMultilingualTTS`.
-- **Inglês**: `ChatterboxTurboTTS`, mais rápido e que entende marcas como `[laugh]`, `[chuckle]`, `[sigh]`, `[gasp]` (o mestre pode usá-las nas falas). Dá para trocar para o multilíngue em Configurações.
+O Mestre narra e cada personagem fala com a própria voz; você só digita. A síntese é local e offline, feita com [KokoroSharp](https://github.com/Lyrcaxis/KokoroSharp) (Kokoro TTS 82M em ONNX, pronúncia pt-BR nativa pelo MisakiSharp, sem espeak). Roda na CPU.
 
-Cada campanha escolhe o **idioma da história** na criação (🇧🇷/🇺🇸): o mestre narra nesse idioma e a voz acompanha.
-
-**Instalar (uma vez):** ⚙️ Configurações → Voz → **📦 Instalar**. Precisa do **Python 3.11** instalado no PC (python.org, marque "Add to PATH"). O app cria um ambiente Python só dele em `%APPDATA%/Crônicas/voz/python`, instala o PyTorch 2.6 (CUDA 12.4 se houver placa NVIDIA, senão CPU) e o `chatterbox-tts`. Também dá para rodar `npm run voz:instalar`. Depois clique em **⚡ Carregar voz**: na primeira vez os modelos (~3 GB) são baixados do Hugging Face e as vozes dos personagens são criadas.
+**Instalar (uma vez):** ⚙️ Configurações → Voz → **🎭 Kokoro** → **📦 Instalar**. O app compila `voz/CronicasVoz` com o **.NET 8 SDK** (se não tiver, tenta instalar pelo winget) em `%APPDATA%/Crônicas/voz/bin`. Também dá para rodar `npm run voz:instalar`. Depois clique em **⚡ Carregar voz**: na primeira vez o modelo `kokoro.onnx` (~320 MB) é baixado para `%APPDATA%/Crônicas/voz`.
 
 **Como funciona**
-- `voz/chatterbox/servico.py` é um serviço Python que o Electron inicia sob demanda e com o qual conversa por JSON, uma linha por mensagem (`iniciar`, `falar`, `semear`, `cancelar`). Cada fala vira um WAV em cache: repetir uma fala não sintetiza de novo.
-- **Timbre = clipe de referência.** O Chatterbox copia a voz de um áudio de 10–20 s. Na primeira carga o app grava a voz embutida do Chatterbox e a transpõe para 16 vozes-base (narrador grave, rainha, brutamontes, goblin, criatura…), com altura, ritmo e textura próprios. Para cada fala, a voz é procurada nesta ordem:
-  1. `<campanha>/artes/vozes/<nome-do-npc>.wav` (só nesta campanha; o herói usa `heroi.wav`)
-  2. `_artes/vozes/<nome-do-npc>.wav` (esse NPC em todas as campanhas)
-  3. `_artes/vozes/<voz>.wav` (sua gravação para uma das 16 vozes)
-  4. a voz-base gerada
-- **Grave vozes de verdade:** em Configurações → Voz → Biblioteca, cada voz tem 🎙️ gravar (lendo um texto na tela) e 📂 importar. Na aba NPCs, 🎙️ grava uma voz só para aquele personagem. Na criação e no editor do herói, 🎙️ grava a voz do seu herói.
-- **Emoção:** a `emocao` de cada fala ajusta `exaggeration`, `cfg_weight` e `temperature` do Chatterbox (grito é intenso e acelerado, sussurro é contido…).
+- `voz/CronicasVoz` é um console .NET 8. O Electron o inicia sob demanda e conversa com ele por JSON, uma linha por mensagem (`iniciar`, `falar`, `cancelar`, `vozes`). Cada fala vira um WAV em cache: repetir uma fala não sintetiza de novo.
+- Cada uma das 16 vozes (narrador grave, rainha, brutamontes, goblin…) é uma **mistura** de vozes do Kokoro: a 1ª é brasileira (`pf_dora`, `pm_alex`, `pm_santa`) e dá o sotaque; a 2ª colore o timbre. Em Configurações → Voz → Biblioteca dá para trocar as duas e ouvir ▶. Campanhas em inglês usam vozes americanas/britânicas.
+- A **emoção** de cada fala (raiva, medo, sussurro…) muda o ritmo: grito acelera, tristeza desacelera.
 - Cada NPC ganha uma voz estável pelo retrato, pelo elenco, por palavras-chave e pelo nome; na aba NPCs dá para trocar e ouvir ▶.
 - Enquanto alguém fala, a música abaixa, o balão de quem fala acende e o card do NPC em cena brilha 🗣️. **Esc** cala a narração; o 🗣️ na barra liga e desliga a voz. Sair da tela cancela as falas que ainda estavam na fila.
 - Sem instalar nada, **Voz do sistema** usa as vozes do Windows.
+
+## Enredo e memória (pouco token, sem esquecer)
+
+- **No primeiro turno** o Mestre planeja o rumo da história inteira: título, premissa, antagonista (com segredo), reviravoltas, 3 a 5 atos com objetivo e virada, ganchos e um final possível → `historia/enredo.json`. Durante o jogo ele conduz para o ato atual, adapta o rumo às suas escolhas e marca quando um ato termina.
+- **Todo turno** ele registra uma linha do que aconteceu, fatos permanentes do mundo, ganchos abertos/resolvidos e notas curtas em cada NPC/lugar (o que sabe, prometeu, esconde) → `historia/memoria.json` e `npcs/*.json`.
+- Em vez de reenviar a conversa inteira, cada turno manda **enredo + memória + as últimas mensagens**. Quando a linha do tempo passa de 30 entradas, o Mestre a compacta num resumo geral. O Claude Code recebe a lista de artes só no início da sessão.
+- Na aba **Missões** aparecem o rumo da história (sem os segredos), o ato atual e o **Diário** com o que já aconteceu e o que você sabe.
+
+## Tela de batalha
+
+Quando começa um combate, a arte da cena vira um **mapa de batalha** visto de cima (10 mapas: cripta, gruta azul, templo do deserto, ruínas da floresta, acampamento, passo nevado, pântano, salão real, praça da cidade, fortaleza vulcânica — cada cenário usa o mais parecido). Você e os inimigos aparecem como fichas com retrato e vida; o inimigo em foco pulsa, quem leva golpe treme, os derrotados ficam caídos com ☠. Clique numa ficha inimiga para atacá-la. As cartas de ação viram Atacar / Defender / Magia / Item.
+
+## Trilhas gravadas
+
+Taverna, mar e cidade tocam faixas gravadas (`renderer/assets/audio`) no lugar da música gerada; os outros temas continuam com a música generativa. Para mudar, edite `TRILHAS` em `renderer/js/audio.js`.
 
 ## O herói
 
@@ -151,16 +159,17 @@ src/main/
   providers/anthropic.js     Claude API
   providers/claude-code.js   Claude Code CLI
   providers/demo.js          mestre offline
-  voz.js                     ponte com o serviço de voz (referências, cache, cancelamento)
-  voz-presets.js             as 16 vozes-base e as emoções
-  voz-instalador.js          cria o Python do app e instala o Chatterbox
-voz/chatterbox/servico.py    serviço de voz (Chatterbox multilíngue + Turbo)
+  voz.js                     ponte com o serviço de voz (cache, cancelamento)
+  voz-presets.js             as 16 vozes (misturas do Kokoro) e as emoções
+  voz-instalador.js          compila o serviço de voz com o .NET 8 SDK
+voz/CronicasVoz/             serviço de voz em C# (KokoroSharp)
+voz/instalar.js              npm run voz:instalar / voz:teste
 renderer/
   js/telas/                  início, criação, jogo, configurações
   js/cenario.js              troca de tema (fundo, partículas, som, anúncios)
   js/particulas.js  js/audio.js  js/temas.js
   js/vozes.js                roteiro, vozes dos NPCs, narrador
-  js/heroi.js  js/gravador.js  imagem/aparência/voz do herói, gravação pelo microfone
+  js/heroi.js                imagem, aparência e voz do herói
 ```
 
 ## Atalhos

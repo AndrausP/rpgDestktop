@@ -33,8 +33,59 @@ const CENAS = [
   { id: 'salao-infernal', nome: 'Salão Infernal', desc: 'salão demoníaco, lava, correntes, estátuas de demônios', temas: ['inferno'] },
   { id: 'campo-de-batalha', nome: 'Campo de Batalha', desc: 'campo após a guerra, armas caídas, fumaça, castelo, pôr do sol', temas: ['batalha'] },
   { id: 'acampamento', nome: 'Acampamento', desc: 'acampamento à noite, fogueira, tendas, céu estrelado', temas: ['noite'] },
+  { id: 'cripta', nome: 'Cripta', desc: 'cripta subterrânea, sarcófagos, braseiros, estátuas', temas: ['masmorra', 'horror'] },
+  { id: 'gruta-azul', nome: 'Gruta Azul', desc: 'caverna de cristais azuis, cachoeiras, lago subterrâneo', temas: ['masmorra', 'arcano'] },
+  { id: 'templo-do-deserto', nome: 'Templo do Deserto', desc: 'templo esculpido na rocha, colunas, areia, sol forte', temas: ['deserto'] },
+  { id: 'ruinas-da-floresta', nome: 'Ruínas da Floresta', desc: 'ruínas cobertas de musgo na mata, altar de pedra, luz entre árvores', temas: ['floresta', 'arcano'] },
+  { id: 'acampamento-planicie', nome: 'Acampamento na Planície', desc: 'tendas de campanha, estrada de terra, colinas ao pôr do sol', temas: ['batalha', 'floresta'] },
+  { id: 'passo-nevado', nome: 'Passo Nevado', desc: 'desfiladeiro gelado, pontes de corda, fortaleza nas montanhas', temas: ['neve'] },
+  { id: 'pantano', nome: 'Pântano', desc: 'brejo sombrio, palafitas, árvores mortas, castelo em ruínas ao fundo', temas: ['horror', 'floresta'] },
+  { id: 'salao-real', nome: 'Salão Real', desc: 'salão do trono dourado, vitrais, tapete vermelho, colunas', temas: ['cidade', 'celestial'] },
+  { id: 'praca-da-cidade', nome: 'Praça da Cidade', desc: 'praça com chafariz, casas enxaimel, barracas, fim de tarde', temas: ['cidade'] },
+  { id: 'fortaleza-vulcanica', nome: 'Fortaleza Vulcânica', desc: 'fortaleza negra sobre rios de lava, céu em chamas', temas: ['inferno'] },
   { id: 'mapa-mundi', nome: 'Mapa do Mundo', desc: 'mapa isométrico do continente', temas: [], especial: true },
 ].map((c) => ({ ...c, arquivo: `cenas/${c.id}.webp`, origem: 'embutido' }));
+
+/** Mapas de batalha (vista de cima, em grade). Cada cenário usa o mapa mais parecido com ele. */
+const MAPAS_BATALHA = ['cripta', 'gruta-azul', 'templo-do-deserto', 'ruinas-da-floresta', 'acampamento-planicie', 'passo-nevado', 'pantano', 'salao-real', 'praca-da-cidade', 'fortaleza-vulcanica'];
+const BATALHA_DA_CENA = {
+  taverna: 'praca-da-cidade', 'guilda-aventureiros': 'praca-da-cidade', 'cidade-mercado': 'praca-da-cidade', 'vila-campestre': 'acampamento-planicie',
+  'sala-do-trono': 'salao-real', porto: 'praca-da-cidade', 'floresta-encantada': 'ruinas-da-floresta', 'floresta-sombria': 'pantano',
+  'ruinas-antigas': 'ruinas-da-floresta', 'fortaleza-sombria': 'cripta', 'caverna-cristais': 'gruta-azul', 'mina-abandonada': 'gruta-azul',
+  cemiterio: 'cripta', 'montanha-nevada': 'passo-nevado', 'deserto-ruinas': 'templo-do-deserto', 'cidade-deserto': 'templo-do-deserto',
+  'templo-celestial': 'salao-real', 'salao-infernal': 'fortaleza-vulcanica', 'campo-de-batalha': 'acampamento-planicie', acampamento: 'acampamento-planicie',
+};
+const BATALHA_DO_TEMA = {
+  taverna: 'praca-da-cidade', floresta: 'ruinas-da-floresta', masmorra: 'cripta', cidade: 'praca-da-cidade', batalha: 'acampamento-planicie',
+  horror: 'pantano', deserto: 'templo-do-deserto', neve: 'passo-nevado', mar: 'praca-da-cidade', arcano: 'gruta-azul',
+  celestial: 'salao-real', inferno: 'fortaleza-vulcanica', noite: 'acampamento-planicie',
+};
+
+// Grade de cada mapa de batalha (medida na imagem 1402×1122): x/y = posição real de cada linha da grade
+// (o desenho não é uniforme, então cada quadrado é o que está pintado). zona = [coluna, linha] do canto da área de luta;
+// mapa: '.' chão, '#' obstáculo (pilar, parede, água, lava, barraca, pedra), 'h' onde o herói entra. 1 quadrado = 1,5 m (5 pés).
+const GRADE_BATALHA = {
+  'acampamento-planicie': { x: [1,42,83,125,167,208,250,293,336,378,419,461,502,543,585,627,669,711,755,798,841,884,927,970,1013,1057,1099,1142,1185,1228,1272,1315,1358,1399], y: [2,43,85,127,171,216,260,304,348,392,436,479,523,567,612,657,702,746,790,834,879,923,967,1012,1056,1101], zona: [7, 8],
+    mapa: ['##..#.##.#.....###', '##..##...#........', '#.................', '..................', '..####............', '..####............', '..................', '................##', '................##', '................##', '...h..............', '..................', '.........###......'] },
+  'cripta': { x: [1,47,93,141,187,233,278,325,371,413,455,500,545,589,633,678,722,766,811,854,897,942,987,1032,1077,1123,1167,1213,1260,1306,1353,1400], y: [1,47,93,141,183,222,265,308,352,394,437,482,526,570,615,660,705,749,795,842,889,936,981,1027,1073,1120], zona: [6, 3],
+    mapa: ['...............###.', '#...............##.', '....##........#....', '##..##........#....', '##..##........#....', '##.....#####.......', '##.....#####.......', '#......#####.......', '#...............###', '....##........#.###', '....##........#.###', '....##........#....', '#.................#', '.........h.........'] },
+  'fortaleza-vulcanica': { x: [2,42,82,123,165,208,250,292,334,376,418,459,502,545,590,635,680,723,768,811,854,897,940,982,1023,1066,1108,1150,1192,1233,1275,1317,1359,1399], y: [2,41,82,126,170,213,257,300,343,387,429,473,519,562,605,649,694,737,781,824,868,912,955,998,1040,1083,1120], zona: [8, 5],
+    mapa: ['#######...#######', '######.....######', '#######...#######', '#######...#######', '#####......######', '....##...........', '#####.......#####', '######....#######', '#######...#######', '########h########'] },
+  'gruta-azul': { x: [1,44,87,130,173,216,259,302,346,389,433,477,523,568,612,656,700,745,789,834,879,924,967,1011,1054,1097,1140,1185,1228,1271,1314,1358,1400], y: [1,44,88,133,177,221,265,310,355,399,442,486,530,574,617,660,704,748,792,836,880,926,971,1016,1061,1104], zona: [1, 12],
+    mapa: ['#....#####.#..##', '##..#####.......', '###.#########...', '###....######...', '##.....######...', '#.......######..', '##......######..', '###.#.......#...', '####.#....h....#'] },
+  'pantano': { x: [1,42,84,126,168,212,256,299,343,389,435,481,528,573,616,660,702,744,785,827,868,910,952,994,1036,1079,1122,1165,1208,1253,1297,1341,1386], y: [2,43,84,126,168,210,251,293,335,376,418,460,501,543,584,624,666,709,751,792,833,875,916,958,1000,1041,1080,1120], zona: [10, 7],
+    mapa: ['..#######....', '...##########', '#...#########', '#....########', '##...#.######', '###....###.##', '####...##..##', '#####........', '#####......##', '######....###', '######.....##', '########....#', '#########.h.#', '#########...#'] },
+  'passo-nevado': { x: [2,43,84,125,168,209,251,291,332,374,416,457,498,539,579,619,661,702,741,782,823,864,904,946,987,1029,1069,1109,1149,1191,1231,1273,1315,1358,1399], y: [1,41,81,121,161,200,240,281,322,363,403,443,484,524,564,605,646,686,727,767,808,849,890,931,971,1010,1048,1084,1120], zona: [3, 3],
+    mapa: ['##..####...#', '##...#......', '####.......h', '####.....###', '######...###', '####.....###', '.......#####', '........####', '....########'] },
+  'praca-da-cidade': { x: [12,56,101,144,187,230,275,319,362,404,447,490,533,577,618,660,701,743,786,828,869,912,955,998,1040,1084,1127,1172,1215,1258,1300,1342,1384], y: [4,46,87,129,170,211,253,296,339,383,427,470,512,556,600,644,687,730,772,816,860,904,949,993,1036,1078,1116], zona: [5, 4],
+    mapa: ['#....................', '.....................', '.........####........', '.......########......', '.......########......', '.......########......', '.......########......', '.......########......', '.......########......', '.........####........', '.....................', '.....................', '#....................', '#....................', '#.........h..........', '####.................'] },
+  'ruinas-da-floresta': { x: [1,45,91,137,182,228,274,321,367,414,461,507,553,601,648,697,745,792,838,884,932,980,1028,1075,1122,1169,1217,1263,1309,1354,1400], y: [2,48,94,140,187,235,283,329,376,424,470,517,564,611,657,705,752,799,847,894,941,988,1035,1082,1120], zona: [9, 7],
+    mapa: ['#.#.......#..', '####......##.', '..#......#...', '#..........##', '#..........##', '#...#..#...##', '.............', '..##.....##..', '..#......###.', '..#.......###', '..#.......###', '..#.#.h...###'] },
+  'salao-real': { x: [15,59,101,143,184,225,268,312,356,399,441,485,529,573,617,660,701,741,784,828,872,916,959,1001,1045,1088,1131,1175,1217,1258,1300,1341,1382], y: [1,45,90,136,181,227,273,317,362,408,453,496,539,584,628,674,719,762,805,850,898,943,987,1031,1077,1120], zona: [7, 3],
+    mapa: ['....#.......#.....', '.##............##.', '.##............##.', '###............###', '###............###', '.##............##.', '###............###', '###............###', '###............###', '.##............##.', '###............###', '###............###', '.##............##.', '#................#', '#................#', '.....#......#.....', '.....##.h..##.....'] },
+  'templo-do-deserto': { x: [1,48,98,144,187,230,274,315,357,400,443,487,529,572,615,657,700,743,786,828,870,913,955,998,1041,1084,1127,1170,1213,1257,1300,1348,1400], y: [1,43,84,127,171,214,259,301,343,384,425,467,509,552,594,637,678,719,762,806,849,892,935,977,1020,1062,1106], zona: [7, 7],
+    mapa: ['....##.......###.....', '.....................', '....##......##.......', '#...##......##.......', '#...##......##.....##', '..####.............##', '..####.............##', '...................##', '...................##', '....##......##.....##', '#...##......##.......', '#...##......##.......', '.#...................', '.##................##', '........h............'] },
+};
 
 const RETRATOS = [
   { id: 'guerreiro', nome: 'Guerreiro', desc: 'homem jovem, armadura, espada, cachecol vermelho' },
@@ -57,6 +108,27 @@ const RETRATOS = [
   { id: 'anjo', nome: 'Anjo', desc: 'guerreira alada, auréola, armadura branca' },
   { id: 'orc', nome: 'Orc', desc: 'orc guerreiro de armadura com machado' },
   { id: 'goblin-mercador', nome: 'Goblin Mercador', desc: 'goblin sorridente carregando poções e bugigangas' },
+  // bestiário: monstros (arte em retratos/)
+  { id: 'boi-do-abismo', nome: 'Boi do Abismo', desc: 'monstro: touro demoníaco de chifres enormes e fendas em brasa', monstro: true },
+  { id: 'sereia-de-cinzas', nome: 'Sereia de Cinzas', desc: 'monstro: sereia feita de fumaça e brasas', monstro: true },
+  { id: 'aranha-sino', nome: 'Aranha-Sino', desc: 'monstro: aranha gigante com um sino de bronze como corpo', monstro: true },
+  { id: 'bispo-das-moscas', nome: 'Bispo das Moscas', desc: 'monstro: bispo profano de muitos braços, mitra e cajado', monstro: true },
+  { id: 'pastor-de-ossos', nome: 'Pastor de Ossos', desc: 'monstro: esqueleto alto com galhada, lanterna e cajado', monstro: true },
+  { id: 'sapo-catedral', nome: 'Sapo-Catedral', desc: 'monstro: sapo colossal com uma catedral e sinos nas costas', monstro: true },
+  { id: 'filho-da-lua-morta', nome: 'Filho da Lua Morta', desc: 'monstro: figura pálida e esguia com um eclipse no lugar da cabeça', monstro: true },
+  { id: 'anjo-afogado', nome: 'Anjo Afogado', desc: 'monstro: anjo de asas encharcadas e rosto velado', monstro: true },
+  { id: 'devorador-de-ecos', nome: 'Devorador de Ecos', desc: 'monstro: humanoide magro com uma boca de dentes no lugar da cabeça', monstro: true },
+  { id: 'cervo-de-vidro', nome: 'Cervo de Vidro', desc: 'monstro: cervo de cristal com galhada de vidro e coração de luz', monstro: true },
+  { id: 'homem-colmeia', nome: 'Homem-Colmeia', desc: 'monstro: humanoide feito de favos de cera dourada', monstro: true },
+  { id: 'cavaleiro-oco', nome: 'Cavaleiro Oco', desc: 'monstro: armadura negra vazia e espinhosa com espadão', monstro: true },
+  { id: 'relogio-faminto', nome: 'Relógio Faminto', desc: 'monstro: autômato de relógio com máscara de porcelana e garras', monstro: true },
+  { id: 'devorador-de-luz', nome: 'Devorador de Luz', desc: 'monstro: fera de sombra retorcida e sorriso branco', monstro: true },
+  { id: 'cao-de-muitas-sombras', nome: 'Cão de Muitas Sombras', desc: 'monstro: lobo gigante envolto em sombras', monstro: true },
+  { id: 'viuva-da-nevoa', nome: 'Viúva da Névoa', desc: 'monstro: espectro feminino de névoa e cabelos longos', monstro: true },
+  { id: 'carnical-de-porcelana', nome: 'Carniçal de Porcelana', desc: 'monstro: morto-vivo de pele de porcelana rachada e máscara', monstro: true },
+  { id: 'rainha-dos-vermes-dourados', nome: 'Rainha dos Vermes Dourados', desc: 'monstro: rainha de coroa cujo vestido é feito de vermes de ouro', monstro: true },
+  { id: 'boca-do-pantano', nome: 'Boca do Pântano', desc: 'monstro: massa de lodo e musgo com uma bocarra de dentes', monstro: true },
+  { id: 'arvore-andante', nome: 'Árvore Andante', desc: 'monstro: árvore morta que anda, olhos verdes no tronco', monstro: true },
   // elenco de NPCs nomeados (corpo inteiro em npcs/, busto em retratos/)
   { id: 'alaric-dorne', nome: "Alaric Dorne", funcao: "Arqueólogo", desc: "arqueólogo: homem de barba, casaco de couro, examina uma relíquia", corpo: true },
   { id: 'aldren-valcor', nome: "Aldren Valcor", funcao: "Capitão da Guarda", desc: "capitão da guarda: capitão grisalho de armadura com leão e capa vermelha", corpo: true },
@@ -233,7 +305,8 @@ function comUrls(cat, slugCampanha) {
   const itens = {};
   for (const [k, v] of Object.entries(cat.itens)) itens[k] = mapa(v);
   const familias = ITENS.filter((i) => i.familia).map((i) => ({ palavras: i.familia, url: itens[i.id]?.url || url(i) }));
-  return { cenas: cat.cenas.map(mapa), retratos: cat.retratos.map(mapa), itens, familias, temaPadrao: cat.temaPadrao };
+  const batalha = Object.fromEntries(MAPAS_BATALHA.map((id) => [id, url({ arquivo: `batalha/${id}.webp`, origem: 'embutido' })]));
+  return { cenas: cat.cenas.map(mapa), retratos: cat.retratos.map(mapa), itens, familias, temaPadrao: cat.temaPadrao, batalha, batalhaGrade: GRADE_BATALHA, batalhaDaCena: BATALHA_DA_CENA, batalhaDoTema: BATALHA_DO_TEMA };
 }
 
-module.exports = { CENAS, RETRATOS, ITENS, TEMA_PADRAO, montar, comUrls, resolverUrl };
+module.exports = { CENAS, RETRATOS, ITENS, TEMA_PADRAO, MAPAS_BATALHA, BATALHA_DA_CENA, GRADE_BATALHA, montar, comUrls, resolverUrl };

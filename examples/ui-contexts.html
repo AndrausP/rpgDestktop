@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crônicas · Atmosferas da interface</title>
+  <style>
+    @font-face { font-family: Cinzel; src: url('../renderer/assets/fonts/cinzel-latin-700-normal.woff2'); }
+    @font-face { font-family: Crimson; src: url('../renderer/assets/fonts/crimson-pro-latin-400-normal.woff2'); }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #090b0d; color: #f0e9df; font: 18px/1.45 Crimson, Georgia, serif; }
+    a { color: inherit; }
+    header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 12px clamp(16px, 4vw, 60px); background: #0a0c0eea; border-bottom: 1px solid #51565b; backdrop-filter: blur(12px); }
+    h1, h2, h3 { font-family: Cinzel, Georgia, serif; margin: 0; }
+    h1 { font-size: 21px; }
+    header nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    header nav a { padding: 5px 10px; border-bottom: 1px solid #646a6f; text-decoration: none; font: 13px Arial, sans-serif; }
+    header nav a:hover, header nav a:focus-visible { color: #f0b376; border-color: currentColor; }
+    main { max-width: 1500px; margin: auto; padding: 24px clamp(14px, 3vw, 44px) 80px; }
+    .intro { max-width: 820px; margin: 0 0 24px; color: #bac0c2; }
+    .contexto { --acento: #f2a647; --texto: #f4e7d2; --suave: #bfa88a; --cena: url('../renderer/assets/cenas/taverna.webp'); margin: 0 0 40px; scroll-margin-top: 82px; }
+    .contexto.cidade { --acento: #ecc463; --texto: #eef0fa; --suave: #a3abc9; --cena: url('../renderer/assets/cenas/cidade-mercado.webp'); }
+    .contexto.caverna { --acento: #a9bdd2; --texto: #dde3ea; --suave: #9aa8b7; --cena: url('../renderer/assets/cenas/caverna-cristais.webp'); }
+    .contexto.igreja { --acento: #ffe39a; --texto: #fffaf0; --suave: #d8cfe6; --cena: url('../renderer/assets/cenas/templo-celestial.webp'); }
+    .contexto > h2 { font-size: 23px; margin: 0 0 4px; color: var(--texto); }
+    .contexto > p { margin: 0 0 12px; color: var(--suave); }
+    .tela { min-height: 480px; display: grid; grid-template-columns: 225px minmax(0, 1fr) 240px; gap: 8px; padding: 8px; color: var(--texto); background: linear-gradient(90deg, #080a0cee, #0b0d10e0), url('../renderer/assets/ui/Backgrounds/bg-panel-dark.png') center / 700px; box-shadow: 0 18px 40px #0008; border-top: 2px solid var(--acento); }
+    .lado, .centro { min-width: 0; background: #0a0d10d9; }
+    .retrato { position: relative; height: 168px; padding: 115px 15px 10px; background: linear-gradient(0deg, #060809e8 4%, transparent 70%), url('../renderer/assets/retratos/alaric-dorne.webp') center 18% / cover; }
+    .retrato::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 10px solid transparent; border-image: url('../renderer/assets/ui/Frames/frame-portrait-player.png') 145 / 10px / 0 stretch; }
+    .retrato b { position: relative; z-index: 1; font-family: Cinzel, Georgia, serif; text-shadow: 0 2px 8px #000; }
+    .lado .miolo { padding: 12px; }
+    .stat { display: flex; align-items: center; gap: 8px; font: 12px Arial, sans-serif; margin-bottom: 9px; }
+    .stat img { width: 18px; height: 18px; object-fit: contain; }
+    .trilho { height: 8px; flex: 1; background: #06080a; border: 1px solid #474b4f; }
+    .trilho i { display: block; height: 100%; }
+    .vida i { width: 78%; background: #c82e2a url('../renderer/assets/ui/Bars/hp-fill.png') left / auto 100% repeat-x; }
+    .mana i { width: 65%; background: #2c75d8 url('../renderer/assets/ui/Bars/mana-fill.png') left / auto 100% repeat-x; }
+    .xp i { width: 38%; background: linear-gradient(90deg, #885d1c, #e4ae49); }
+    .lado h3 { margin: 18px 0 6px; font-size: 11px; letter-spacing: .14em; color: var(--suave); }
+    .equip { display: flex; gap: 5px; }
+    .equip span { width: 46px; height: 46px; display: grid; place-items: center; background: url('../renderer/assets/ui/Slots/slot-default.png') center / cover; }
+    .equip .ativo { background-image: url('../renderer/assets/ui/Slots/slot-equipped.png'); }
+    .banner { height: 190px; position: relative; background: linear-gradient(0deg, #050708c9, transparent 60%), var(--cena) center / cover; }
+    .banner span { position: absolute; bottom: 12px; left: 14px; padding-left: 9px; border-left: 2px solid var(--acento); background: #050708bb; font: 14px Arial, sans-serif; }
+    .narrativa { min-height: 170px; padding: 18px 22px; background: linear-gradient(#090c0fee, #090c0ff5), url('../renderer/assets/ui/Frames/frame-narrative.png') center / cover; }
+    .narrativa h3 { font-size: 14px; color: var(--acento); margin-bottom: 8px; }
+    .narrativa p { max-width: 68ch; margin: 0; font-size: 18px; line-height: 1.55; }
+    .acoes { display: flex; gap: 7px; padding: 8px; }
+    .acoes span { flex: 1; min-width: 0; padding: 9px 5px; text-align: center; font: 13px Arial, sans-serif; background: #171a1d url('../renderer/assets/ui/Buttons/button-default.png') center / 100% 100%; border: 1px solid #52575b; }
+    .acoes .principal { border-color: var(--acento); color: var(--acento); }
+    .abas { display: flex; justify-content: space-around; border-bottom: 1px solid #545a60; padding: 9px 3px; }
+    .abas span { font: 12px Arial, sans-serif; text-align: center; color: var(--suave); }
+    .abas img { display: block; width: 27px; height: 27px; object-fit: contain; margin: 0 auto 3px; }
+    .abas .sel { color: var(--texto); border-bottom: 2px solid var(--acento); }
+    .lista { padding: 12px; }
+    .lista h3 { font-size: 13px; margin: 0 0 10px; color: var(--acento); }
+    .lista p { margin: 0 0 10px; border-bottom: 1px solid #383d42; padding-bottom: 8px; font-size: 15px; }
+    .lista small { display: block; color: var(--suave); font: 12px Arial, sans-serif; }
+    @media (max-width: 1100px) { .tela { grid-template-columns: 175px minmax(0,1fr) 185px; min-height: 430px; } .banner { height: 140px; } .narrativa { min-height: 190px; padding: 12px; } .retrato { height: 140px; padding-top: 95px; } .acoes span { font-size: 11px; } .abas span { font-size: 10px; } }
+    @media (max-width: 720px) { .tela { grid-template-columns: 1fr; } .lado { display: none; } .banner { height: 180px; } header { position: static; flex-wrap: wrap; } }
+  </style>
+</head>
+<body>
+  <header><h1>Crônicas · Atmosferas</h1><nav aria-label="Ir para o exemplo"><a href="#cidade">Cidade</a><a href="#caverna">Caverna</a><a href="#igreja">Igreja</a><a href="#taverna">Taverna</a></nav></header>
+  <main>
+    <p class="intro">Prévia visual de quatro situações da mesma tela. A estrutura e os materiais permanecem; cena, luz, texto, partículas e som acompanham o tema escolhido pela história. Os exemplos usam pares de cena e tema já existentes no jogo. Personagens, valores e ações mostrados aqui são ilustrativos e não alteram campanhas salvas.</p>
+    <section class="contexto cidade" id="cidade"><h2>Cidade · Mercado de Valen</h2><p>Cena <code>cidade-mercado</code> · tema <code>cidade</code> · lanternas, movimento e dourado discreto.</p><div class="tela"><aside class="lado"><div class="retrato"><b>Alaric Dorne</b></div><div class="miolo"><div class="stat vida"><img src="../renderer/assets/ui/Icons/status/health.png" alt="Vida"><div class="trilho"><i></i></div>78/100</div><div class="stat mana"><img src="../renderer/assets/ui/Icons/status/mana.png" alt="Mana"><div class="trilho"><i></i></div>39/60</div><div class="stat xp"><span>XP</span><div class="trilho"><i></i></div>380/1000</div><h3>EQUIPAMENTO</h3><div class="equip"><span class="ativo">⚔</span><span>🛡</span><span></span></div></div></aside><div class="centro"><div class="banner"><span>Mercado de Valen</span></div><div class="narrativa"><h3>A PRAÇA ACORDA</h3><p>As bancas abrem sob os arcos de pedra. Entre pregões e passos apressados, um mensageiro encapuzado espera junto à fonte e faz um sinal discreto para você.</p></div><div class="acoes"><span class="principal">Falar com o mensageiro</span><span>Investigar a praça</span><span>Entrar na loja</span></div></div><aside class="lado"><div class="abas"><span class="sel"><img src="../renderer/assets/ui/Icons/menu/inventory.png" alt="">Itens</span><span><img src="../renderer/assets/ui/Icons/menu/quests.png" alt="">Missões</span><span><img src="../renderer/assets/ui/Icons/menu/locations.png" alt="">Lugares</span></div><div class="lista"><h3>POR PERTO</h3><p>Mercador de mapas<small>Comércio · aberto</small></p><p>Mensageiro encapuzado<small>NPC · aguardando</small></p></div></aside></div></section>
+    <section class="contexto caverna" id="caverna"><h2>Caverna · Galeria de Cristais</h2><p>Cena <code>caverna-cristais</code> · tema <code>masmorra</code> · poeira fria, eco e alerta contido.</p><div class="tela"><aside class="lado"><div class="retrato"><b>Alaric Dorne</b></div><div class="miolo"><div class="stat vida"><img src="../renderer/assets/ui/Icons/status/health.png" alt="Vida"><div class="trilho"><i></i></div>78/100</div><div class="stat mana"><img src="../renderer/assets/ui/Icons/status/mana.png" alt="Mana"><div class="trilho"><i></i></div>39/60</div><div class="stat xp"><span>XP</span><div class="trilho"><i></i></div>380/1000</div><h3>EQUIPAMENTO</h3><div class="equip"><span class="ativo">⚔</span><span>🛡</span><span></span></div></div></aside><div class="centro"><div class="banner"><span>Galeria de Cristais</span></div><div class="narrativa"><h3>O ECO SOB A ROCHA</h3><p>Um brilho azul pálido corre pelas paredes úmidas. Ao fundo, uma gota cai em intervalos regulares. Outra coisa responde ao som, mais adiante, fora do alcance da sua tocha.</p></div><div class="acoes"><span class="principal">Investigar o som</span><span>Avançar com cuidado</span><span>Examinar os cristais</span></div></div><aside class="lado"><div class="abas"><span class="sel"><img src="../renderer/assets/ui/Icons/menu/inventory.png" alt="">Itens</span><span><img src="../renderer/assets/ui/Icons/menu/quests.png" alt="">Missões</span><span><img src="../renderer/assets/ui/Icons/menu/locations.png" alt="">Lugares</span></div><div class="lista"><h3>POR PERTO</h3><p>Veio de cristais<small>Interagir · instável</small></p><p>Túnel escuro<small>Saída · desconhecida</small></p></div></aside></div></section>
+    <section class="contexto igreja" id="igreja"><h2>Igreja · Templo Celestial</h2><p>Cena <code>templo-celestial</code> · tema <code>celestial</code> · luz difusa, partículas claras e silêncio.</p><div class="tela"><aside class="lado"><div class="retrato"><b>Alaric Dorne</b></div><div class="miolo"><div class="stat vida"><img src="../renderer/assets/ui/Icons/status/health.png" alt="Vida"><div class="trilho"><i></i></div>78/100</div><div class="stat mana"><img src="../renderer/assets/ui/Icons/status/mana.png" alt="Mana"><div class="trilho"><i></i></div>39/60</div><div class="stat xp"><span>XP</span><div class="trilho"><i></i></div>380/1000</div><h3>EQUIPAMENTO</h3><div class="equip"><span class="ativo">⚔</span><span>🛡</span><span></span></div></div></aside><div class="centro"><div class="banner"><span>Templo Celestial</span></div><div class="narrativa"><h3>SOB A CÚPULA</h3><p>Feixes suaves atravessam os vitrais e pousam sobre o altar. A sacerdotisa interrompe a oração quando você entra. Ela parece conhecer seu nome antes mesmo da apresentação.</p></div><div class="acoes"><span class="principal">Falar com a sacerdotisa</span><span>Observar o altar</span><span>Fazer uma prece</span></div></div><aside class="lado"><div class="abas"><span class="sel"><img src="../renderer/assets/ui/Icons/menu/inventory.png" alt="">Itens</span><span><img src="../renderer/assets/ui/Icons/menu/quests.png" alt="">Missões</span><span><img src="../renderer/assets/ui/Icons/menu/locations.png" alt="">Lugares</span></div><div class="lista"><h3>POR PERTO</h3><p>Sacerdotisa Miriel<small>NPC · neutra</small></p><p>Altar de luz<small>Interagir · sagrado</small></p></div></aside></div></section>
+    <section class="contexto taverna" id="taverna"><h2>Taverna · A Última Caneca</h2><p>Cena <code>taverna</code> · tema <code>taverna</code> · brasas, ruído de conversa e âmbar quente.</p><div class="tela"><aside class="lado"><div class="retrato"><b>Alaric Dorne</b></div><div class="miolo"><div class="stat vida"><img src="../renderer/assets/ui/Icons/status/health.png" alt="Vida"><div class="trilho"><i></i></div>78/100</div><div class="stat mana"><img src="../renderer/assets/ui/Icons/status/mana.png" alt="Mana"><div class="trilho"><i></i></div>39/60</div><div class="stat xp"><span>XP</span><div class="trilho"><i></i></div>380/1000</div><h3>EQUIPAMENTO</h3><div class="equip"><span class="ativo">⚔</span><span>🛡</span><span></span></div></div></aside><div class="centro"><div class="banner"><span>A Última Caneca</span></div><div class="narrativa"><h3>CALOR ENTRE AS SOMBRAS</h3><p>O fogo crepita perto do balcão. Garrick seca uma caneca e indica uma mesa ao fundo, onde uma viajante espera sob o capuz. O cheiro de pão fresco contrasta com a tensão no salão.</p></div><div class="acoes"><span class="principal">Falar com Garrick</span><span>Sentar à mesa</span><span>Ouvir as conversas</span></div></div><aside class="lado"><div class="abas"><span class="sel"><img src="../renderer/assets/ui/Icons/menu/inventory.png" alt="">Itens</span><span><img src="../renderer/assets/ui/Icons/menu/quests.png" alt="">Missões</span><span><img src="../renderer/assets/ui/Icons/menu/locations.png" alt="">Lugares</span></div><div class="lista"><h3>POR PERTO</h3><p>Garrick, taverneiro<small>NPC · amigável</small></p><p>Viajante encapuzada<small>NPC · desconhecida</small></p></div></aside></div></section>
+  </main>
+</body>
+</html>

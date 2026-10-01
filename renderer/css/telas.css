@@ -158,28 +158,55 @@ code { font-family: var(--fonte-mono); font-size: .85em; padding: 1px 5px; borde
 .voz-heroi select, .campos-heroi select { flex: 1; }
 .idiomas { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0 16px; }
 .idioma { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 6px; background: rgba(0,0,0,.35); border: 1px solid var(--linha); color: var(--texto); cursor: pointer; text-align: left; font: inherit; }
-.idioma .band { font-size: 24px; }
+.idioma .band { font-size: 24px; display: inline-flex; align-items: center; }
+/* bandeiras desenhadas: o Windows não tem emoji de bandeira (mostraria "BR"/"US") */
+.idioma .bandeira { width: 30px; height: 21px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4); }
 .idioma b { display: block; font-size: 16px; }
 .idioma small { display: block; font-size: 12.5px; opacity: .7; }
 .idioma.sel { border-color: var(--ouro-2); box-shadow: 0 0 0 1px var(--ouro-2), 0 0 14px color-mix(in srgb, var(--ouro-2) 30%, transparent); }
 .retrato-cab span { white-space: nowrap; }
 
-/* gravador de voz */
-.modal.medio { width: min(640px, calc(100vw - 32px)); }
-.texto-leitura { margin: 12px 0; padding: 12px 16px; border-left: 3px solid var(--ouro); background: rgba(0,0,0,.35); font-size: 18px; line-height: 1.5; font-style: italic; border-radius: 0 6px 6px 0; }
-.gravador { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; margin: 10px 0; }
-.gravador .btn.gravando { background: #7a1712; border-color: #d63a33; animation: falando 1s ease-in-out infinite; }
-.medidor { height: 10px; border-radius: 5px; background: rgba(0,0,0,.55); border: 1px solid var(--linha); overflow: hidden; }
-.medidor div { height: 100%; width: 0; background: linear-gradient(90deg, #3b8f5a, #d8c35a); transition: width .06s; }
-.medidor div.alto { background: #d63a33; }
-.gravador .tempo { font-variant-numeric: tabular-nums; min-width: 110px; text-align: right; }
-
 /* configurações: biblioteca de vozes e log de instalação */
 .biblioteca-vozes { display: grid; grid-template-columns: 1fr; gap: 5px; margin-top: 6px; max-height: 330px; overflow: auto; padding-right: 4px; }
-.voz-item { display: grid; grid-template-columns: 1fr auto auto auto auto auto; gap: 6px; align-items: center; padding: 5px 8px; border-radius: 6px; background: rgba(0,0,0,.3); border: 1px solid var(--linha); }
+.voz-item { display: grid; grid-template-columns: 1fr minmax(0,140px) minmax(0,170px) auto auto; gap: 6px; align-items: center; padding: 5px 8px; border-radius: 6px; background: rgba(0,0,0,.3); border: 1px solid var(--linha); }
 .voz-item .n { font-size: 15px; }
 .voz-item .fonte { font-size: 12.5px; opacity: .7; white-space: nowrap; }
 .voz-item.sua { border-color: color-mix(in srgb, var(--ouro-2) 50%, transparent); }
 .voz-item.sua .fonte { color: var(--ouro-2); opacity: 1; }
 .biblioteca-vozes > .linha-flex { grid-column: 1 / -1; }
 .log-instalacao { max-height: 160px; overflow: auto; margin: 8px 0 0; padding: 8px 10px; font: 12px/1.4 ui-monospace, Consolas, monospace; background: rgba(0,0,0,.55); border: 1px solid var(--linha); border-radius: 6px; white-space: pre-wrap; color: #cfc2a8; }
+.campo.mini { padding: 4px 8px; font-size: 13.5px; min-width: 0; max-width: 230px; }
+
+/* Início, criação e configuração no mesmo material do HUD. */
+.marca .logo { background: linear-gradient(180deg, #fff7e9, var(--texto) 58%, #879098); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 4px 24px #000); }
+.marca .ornamento { color: var(--acento); }
+.marca .ornamento::before, .marca .ornamento::after { background: url('../assets/ui/Decoration/divider.png') center / 100% 100%; height: 5px; }
+.card-campanha { border: 1px solid var(--ferro-linha); border-bottom: 2px solid var(--cor-tema, var(--acento)); }
+.card-campanha:hover { box-shadow: 0 18px 34px #0009, 0 0 0 1px var(--amber-hover); }
+.card-campanha .arte { margin: 0; border-radius: 2px 2px 0 0; }
+.card-campanha .av { border-color: var(--ferro-linha); }
+.card-campanha .nome { color: var(--texto); }
+.card-nova { border: 1px dashed var(--ferro-linha); }
+.card-nova:hover { border-color: var(--amber-hover); }
+.card-nova .mais, .card-nova .t { color: var(--texto); }
+.painel-criacao { border: 0; box-shadow: none; }
+.painel-criacao .cab-arte { margin: 0; }
+.cenario-card, .classe { border-color: var(--ferro-linha); }
+.cenario-card:hover, .classe:hover { border-color: var(--amber-hover); }
+.cenario-card.sel, .classe.sel { border: 2px solid var(--acento); box-shadow: 0 0 0 1px #000, 0 0 14px color-mix(in srgb, var(--acento) 25%, transparent); }
+.atrib-edit { border: 0; border-bottom: 1px solid var(--ferro-linha); border-radius: 0; background: rgba(6, 8, 10, .43); box-shadow: none; }
+.atrib-edit .ctl button { border-color: var(--ferro-linha); }
+.atrib-edit .ctl button:hover { border-color: var(--amber-hover); }
+.galeria-retratos .ret { border: 6px solid transparent; border-image: url('../assets/ui/Frames/frame-portrait-player.png') 145 / 6px / 0 stretch; }
+.galeria-retratos .ret.sel { border: 6px solid transparent; border-image: url('../assets/ui/Frames/frame-portrait-player.png') 145 / 6px / 0 stretch; box-shadow: 0 0 0 2px var(--acento); }
+.provedor, .cfg-bloco, .voz-item, .idioma { border: 0; border-bottom: 1px solid var(--ferro-linha); border-radius: 0; }
+.provedor:hover, .idioma:hover { border-bottom-color: var(--amber-hover); }
+.provedor.sel, .idioma.sel { border-bottom: 2px solid var(--acento); background: color-mix(in srgb, var(--acento) 10%, rgba(6, 8, 10, .6)); box-shadow: none; }
+input[type=range] { accent-color: var(--acento); }
+@media (max-width: 1100px) {
+  .tela-inicio { padding: 24px; }
+  .criacao-tela { gap: 6px; padding: 6px; }
+  .corpo-painel { padding: 6px 14px 16px; }
+  .cenarios, .classes { gap: 5px; }
+  .atrib-grade { gap: 3px; }
+}

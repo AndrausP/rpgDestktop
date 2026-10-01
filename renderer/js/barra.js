@@ -9,6 +9,11 @@ export function iniciarBarra() {
   b.addEventListener('dblclick', (e) => {
     if (!e.target.closest('.extra, .ctl')) window.rpg.janela.maximizar();
   });
+  // maximizada: a barra desce o que a janela passou da tela (Windows, janela sem moldura)
+  window.rpg.janela.onMaximizada?.((max, folga = 0) => {
+    document.documentElement.classList.toggle('maximizada', !!max);
+    document.documentElement.style.setProperty('--folga-topo', `${max ? folga : 0}px`);
+  });
   window.rpg.janela.plataforma().then((p) => p === 'darwin' && document.documentElement.classList.add('mac')).catch(() => {});
 }
 

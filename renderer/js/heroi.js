@@ -2,7 +2,6 @@
 import { $, $$, esc, modal, toast } from './ui.js';
 import { catalogo, urlRetrato, slugify } from './arte.js';
 import { PRESETS_VOZ, narrador } from './vozes.js';
-import { gravarVoz } from './gravador.js';
 
 const MAX_LADO = 1024;
 
@@ -79,7 +78,7 @@ export function opcoesVoz(sel) {
     .map(([id, v]) => `<option value="${id}" ${id === sel ? 'selected' : ''}>${esc(v.nome)}</option>`).join('');
 }
 
-/** Ouve uma frase com a voz escolhida (Chatterbox ou voz do sistema). */
+/** Ouve uma frase com a voz escolhida (Kokoro ou voz do sistema). */
 export function ouvirVoz(preset, { nome = '', slug = null, idioma = 'pt', cfg } = {}) {
   narrador.configurar(cfg || {});
   const texto = idioma === 'en' ? `My name is ${nome || 'unknown'}. And this is my voice.` : `Meu nome é ${nome || 'ninguém'}. E esta é a minha voz.`;
@@ -109,7 +108,6 @@ export function editarHeroi(st, slug, cfg) {
         <div class="linha-flex">
           <select class="campo" data-voz>${opcoesVoz(p.voz || 'homem-jovem')}</select>
           <button class="btn" data-ouvir title="Ouvir">▶</button>
-          <button class="btn" data-gravar title="Gravar a sua voz para o herói">🎙️ Gravar</button>
         </div>
       </div>
     </div>
@@ -122,12 +120,6 @@ export function editarHeroi(st, slug, cfg) {
     else { novoRetrato = r.retrato; novaImagem = null; $('[data-prev]', m.el).src = urlRetrato(r.retrato) || ''; }
   });
   $('[data-ouvir]', m.el).addEventListener('click', () => ouvirVoz($('[data-voz]', m.el).value, { nome: p.nome, slug, idioma, cfg }));
-  $('[data-gravar]', m.el).addEventListener('click', async () => {
-    const wav = await gravarVoz({ titulo: `Voz de ${p.nome}`, idioma });
-    if (!wav) return;
-    await window.rpg.voz.salvarRef('heroi', wav, slug);
-    toast('🎙️ Voz do herói gravada. Ela vale só nesta campanha.');
-  });
   $('[data-salvar]', m.el).addEventListener('click', async () => {
     try {
       const dados = { aparencia: $('[data-aparencia]', m.el).value.trim(), voz: $('[data-voz]', m.el).value };
