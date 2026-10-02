@@ -29,7 +29,7 @@ const ICONE_SUGESTAO = [
 ];
 
 
-export function telaJogo(raiz, { slug, novo, papel = 'solo' }) {
+export function telaJogo(raiz, { slug, novo, papel = 'solo', convidar = false }) {
   let st = null;
   let aplicados = 0; // turnos já mostrados (no co-op o resultado pode chegar antes da resposta do pedido)
   let ocupado = false;
@@ -136,6 +136,13 @@ export function telaJogo(raiz, { slug, novo, papel = 'solo' }) {
     vidaAnterior = st.personagem.vida;
     renderTudo();
     historico.renderCompleta();
+    if (convidar && ctx.papel === 'host') {
+      // veio do assistente com "convidar amigos": mostra o código antes de o mestre abrir a aventura
+      await abrirSalaHost(ctx);
+      if (!vivo) return;
+      $('[data-coop]', extra).classList.toggle('on', ctx.papel === 'host');
+      renderGrupo();
+    }
     if (ctx.papel === 'convidado') {
       // convidado: quem abre a aventura e repete turnos é o host
       if (!st.mensagens.length) historico.mostrarPensando();

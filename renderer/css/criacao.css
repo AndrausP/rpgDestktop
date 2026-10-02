@@ -213,3 +213,7 @@
   .wizard-intro h1 { font-size: 24px; }
   .wizard-panel-head { margin-bottom: 14px; }
 }
+
+.wizard-coop { margin-top: 14px; }
+.wizard-coop label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.wizard-coop [data-coop-nome] { margin-top: 8px; }

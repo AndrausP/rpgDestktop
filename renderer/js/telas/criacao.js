@@ -5,6 +5,7 @@ import { setBarra } from '../barra.js';
 import { urlCena, urlRetrato, iconeHtml, iconeKitHtml, iconeItemHtml } from '../arte.js';
 import { escolherRetrato, opcoesVoz, ouvirVoz } from '../heroi.js';
 import { vozDoNpc } from '../vozes.js';
+import { lsGet, lsSet } from '../jogo/util.js';
 
 const CENARIOS = [
   { n: 'Fantasia épica', d: 'Reinos, dragões, magia antiga e heróis lendários.', tema: 'taverna', arte: 'cidade-mercado', local: 'Cidade de Valen' },
@@ -170,6 +171,7 @@ export function telaCriacao(raiz) {
             <section class="wizard-panel" data-etapa="4" aria-labelledby="wizard-titulo-4" hidden>
               <div class="wizard-panel-head"><span class="wizard-panel-icon" aria-hidden="true">${iconeKitHtml('menu', 'grimoire')}</span><span class="wizard-kicker">CAPÍTULO V · REVISÃO</span><h2 id="wizard-titulo-4" tabindex="-1">Tudo pronto para começar?</h2><p>${etapas[4].descricao}</p></div>
               <div class="wizard-review" data-revisao></div>
+              <div class="wizard-field wizard-coop"><label><input type="checkbox" data-coop-convidar> 🤝 Convidar amigos (co-op)</label><p>Abre uma sala assim que a campanha for criada — até 2 amigos na mesma rede entram com o código.</p><input class="campo" data-coop-nome maxlength="30" placeholder="Seu nome na mesa (ex.: Felipe)" hidden></div>
               <div class="wizard-error wizard-submit-error" data-erro-envio role="alert"></div>
             </section>
           </form>
@@ -404,6 +406,11 @@ export function telaCriacao(raiz) {
     if (vivo) irPara('inicio');
   });
   $('[data-criar]', el).addEventListener('click', criar);
+  $('[data-coop-convidar]', el).addEventListener('change', (ev) => {
+    const nomeCampo = $('[data-coop-nome]', el);
+    nomeCampo.hidden = !ev.currentTarget.checked;
+    if (!nomeCampo.hidden) { nomeCampo.value ||= lsGet('cronicas:coop-nome', ''); nomeCampo.focus(); }
+  });
 
   async function criar() {
     if (enviando) return;
@@ -441,7 +448,18 @@ export function telaCriacao(raiz) {
         },
         itensIniciais: classe.itens,
       });
-      if (vivo) irPara('jogo', { slug, novo: true });
+      let convidar = false;
+      if ($('[data-coop-convidar]', el).checked) {
+        const nomeHost = $('[data-coop-nome]', el).value.trim() || 'Host';
+        lsSet('cronicas:coop-nome', nomeHost);
+        try {
+          await api.coop.hospedar(slug, nomeHost);
+          convidar = true;
+        } catch (erroSala) {
+          toast(`Campanha criada, mas a sala co-op não abriu: ${erroSala.message}. Abra depois no 🤝.`, 'erro');
+        }
+      }
+      if (vivo) irPara('jogo', { slug, novo: true, ...(convidar ? { papel: 'host', convidar: true } : {}) });
     } catch (error) {
       const mensagem = error?.message || 'Não foi possível criar a aventura. Tente novamente.';
       $('[data-erro-envio]', el).textContent = mensagem;
