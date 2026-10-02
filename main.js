@@ -10,12 +10,14 @@ const mapa = require('./src/main/mapa');
 const { Voz } = require('./src/main/voz');
 const { Sala } = require('./src/main/coop/servidor');
 const { Cliente } = require('./src/main/coop/cliente');
+const coopLog = require('./src/main/coop/log');
 let voz;
 let sala = null; // co-op: a sala que este PC hospeda
 const cliente = new Cliente((ev) => win?.webContents.send('coop:evento', ev)); // co-op: a sala em que este PC é convidado
 
 // pasta de dados fixa (%APPDATA%/Crônicas no Windows) — o instalador da voz (npm run voz:instalar) usa a mesma
 app.setPath('userData', path.join(app.getPath('appData'), 'Crônicas'));
+coopLog.definirArquivo(path.join(app.getPath('userData'), 'coop.log'));
 
 // arte:// serve imagens embutidas, da pasta _artes/ e da pasta artes/ de cada campanha
 // o nome "Crônicas" entra no User-Agent e o acento quebra os headers do protocolo arte:// → UA só ASCII

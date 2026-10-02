@@ -2,6 +2,7 @@
 // Enquanto conectado, os pedidos da campanha (carregar, ação, inventário...) vão para o host, não para o disco.
 const http = require('http');
 const { PORTA_PADRAO } = require('./servidor');
+const { log, explicarRede, caminho } = require('./log');
 
 class Cliente {
   /** @param {(ev: object) => void} avisar manda um evento para a tela (coop:evento) */
@@ -32,17 +33,24 @@ class Cliente {
     let r;
     try {
       r = await fetch(this.base + rota, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: this.token, ...corpo }), signal: AbortSignal.timeout(rota === '/op' ? 30_000 : 10_000) });
-    } catch {
-      throw new Error('Não consegui falar com o host. Confira o endereço e se o PC dele está na mesma rede.');
+    } catch (e) {
+      const porque = explicarRede(e);
+      log(`cliente: POST ${this.base}${rota} FALHOU — ${porque} [${e?.cause?.code || e?.cause?.errors?.[0]?.code || e?.name}: ${e?.cause?.message || e?.message}]`);
+      throw new Error(`Não consegui falar com ${this.base}: ${porque}. Log: ${caminho() || 'console'}`);
     }
-    const j = await r.json().catch(() => ({ ok: false, erro: `resposta inválida do host (${r.status})` }));
-    if (!j.ok) throw new Error(j.erro || 'erro no host');
+    const j = await r.json().catch(() => ({ ok: false, erro: `resposta inválida do host (${r.status}) — esse endereço é mesmo de uma sala Crônicas?` }));
+    if (!j.ok) {
+      log(`cliente: POST ${rota} recusado pelo host (${r.status}): ${j.erro}`);
+      throw new Error(j.erro || 'erro no host');
+    }
+    log(`cliente: POST ${rota} ok`);
     return j.data;
   }
 
   async conectar({ endereco, codigo, nome }) {
     this.sair();
     this.base = Cliente.normalizar(endereco);
+    log(`cliente: conectando em ${this.base} como "${nome}"`);
     this.token = null;
     const r = await this.post('/entrar', { codigo, nome });
     this.token = r.token;
@@ -107,7 +115,7 @@ class Cliente {
       res.on('end', () => falhou(false));
       res.on('error', () => falhou(false));
     });
-    req.on('error', () => falhou(false));
+    req.on('error', (e) => { log(`cliente: fluxo de eventos erro — ${explicarRede(e)}`); falhou(false); });
     this.req = req;
     let uma = false;
     const falhou = (expulso) => {

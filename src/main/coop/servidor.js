@@ -11,6 +11,7 @@ const path = require('path');
 const crypto = require('crypto');
 const catalogo = require('../catalogo');
 const { HEROI_PRINCIPAL } = require('../campaign-store');
+const { log } = require('./log');
 
 const PORTA_PADRAO = 47800;
 const MAX_CONVIDADOS = 2;
@@ -62,6 +63,7 @@ class Sala {
           s.listen(p, '0.0.0.0', () => { this.servidor = s; ok(); });
         });
         this.porta = p;
+        log(`host: sala aberta em ${enderecosLocais(p).join(', ')} código ${this.codigo}`);
         this.pulso = setInterval(() => this.paraTodos((j) => j.res?.write(': ping\n\n')), 20_000);
         return this.info();
       } catch (e) {
@@ -86,6 +88,7 @@ class Sala {
 
   async atender(req, res) {
     const u = new URL(req.url, 'http://x');
+    log(`host: ${req.method} ${u.pathname} de ${req.socket.remoteAddress}`);
     const responder = (status, corpo) => {
       res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
       res.end(JSON.stringify(corpo));
@@ -107,6 +110,7 @@ class Sala {
       }
       responder(200, { ok: true, data });
     } catch (e) {
+      log(`host: ${u.pathname} recusado — ${e.message}`);
       responder(e.status || 400, { ok: false, erro: e.message || String(e) });
     }
   }
@@ -125,6 +129,8 @@ class Sala {
     res.write(': ok\n\n');
     j.res = res;
     j.online = true;
+    j.jaConectou = true;
+    log(`host: ${j.nome} online (${j.heroi})`);
     res.on('close', () => {
       if (j.res !== res) return;
       j.res = null;
@@ -153,10 +159,11 @@ class Sala {
   async entrar({ codigo, nome } = {}) {
     if (String(codigo || '').trim().toUpperCase() !== this.codigo) throw new Error('Código da sala errado.');
     // quem caiu e não voltou libera a vaga
-    for (const [tk, j] of this.convidados) if (!j.online) this.convidados.delete(tk);
+    // (só quem já esteve online e caiu, ou ficou parado >60 s sem abrir o fluxo — evita expulsar quem acabou de entrar)
+    for (const [tk, j] of this.convidados) if (!j.online && (j.jaConectou || Date.now() - j.criado > 60_000)) this.convidados.delete(tk);
     if (this.convidados.size >= MAX_CONVIDADOS) throw new Error(`A sala está cheia (host + ${MAX_CONVIDADOS} convidados).`);
     const token = crypto.randomBytes(16).toString('hex');
-    this.convidados.set(token, { token, nome: String(nome || 'Convidado').trim().slice(0, 30) || 'Convidado', heroi: null, online: false, res: null });
+    this.convidados.set(token, { token, nome: String(nome || 'Convidado').trim().slice(0, 30) || 'Convidado', heroi: null, online: false, res: null, criado: Date.now() });
     const st = await this.store.carregar(this.slug);
     return { token, slug: this.slug, campanha: { nome: st.campanha.nome, cenario: st.campanha.cenario, capitulo: st.campanha.capitulo }, herois: await this.heroisLivres(token) };
   }
