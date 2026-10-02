@@ -22,6 +22,7 @@ contextBridge.exposeInMainWorld('rpg', {
     ler: (slug) => call('catalogo:ler', slug),
     abrirPasta: () => call('artes:abrirPasta'),
   },
+  compendio: { listar: () => call('compendio:listar') },
   combate: { salvar: (slug, dados) => call('combate:salvar', slug, dados) },
   mapa: {
     ler: () => call('mapa:ler'),

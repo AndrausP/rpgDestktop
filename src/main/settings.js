@@ -8,6 +8,7 @@ const PADRAO = {
   modelo: 'claude-sonnet-5-5',
   claudePath: 'claude',
   claudeModelo: '',
+  claudeModoMestre: 'rapido', // 'rapido' (esforço baixo, sem pensar) | 'equilibrado' | 'profundo' (pensa antes de narrar)
   pastaCampanhas: '',
   velocidadeTexto: 14, // ms por caractere (0 = instantâneo)
   som: true,

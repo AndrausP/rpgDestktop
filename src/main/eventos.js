@@ -150,7 +150,7 @@ async function aplicarEventos(store, slug, eventos, { padrao } = {}) {
         if (!e.nome) break;
         const temVida = e.vida !== undefined && e.vida !== null;
         const { novo, existia, antes } = await store.upsertColecao(slug, 'npcs', e.nome, {
-          descricao: e.descricao, relacao: e.relacao, retrato: e.retrato, tamanho: e.tamanho, alcance: e.alcance,
+          descricao: e.descricao, relacao: e.relacao, retrato: e.retrato, tamanho: e.tamanho, alcance: e.alcance, ameaca: e.ameaca,
           vidaMax: e.vidaMax !== undefined ? Math.max(1, toInt(e.vidaMax, 1)) : undefined,
         }, { relacao: 'desconhecido' });
         if (e.nota) await store.anotar(slug, 'npcs', e.nome, e.nota);

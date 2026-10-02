@@ -38,6 +38,11 @@ export async function abrirConfig() {
       <div class="ajuda">Instale com <code>npm i -g @anthropic-ai/claude-code</code> e rode <code>claude</code> uma vez para logar.</div>
       <label class="rotulo">Modelo (opcional)</label>
       <input class="campo" data-k="claudeModelo" value="${esc(c.claudeModelo)}" placeholder="padrão do Claude Code (ex.: sonnet, opus)">
+      <label class="rotulo">Ritmo do mestre</label>
+      <select class="campo" data-k="claudeModoMestre">
+        ${[['rapido', 'Rápido — responde em ~8-12 s (recomendado)'], ['equilibrado', 'Equilibrado — pensa um pouco mais'], ['profundo', 'Profundo — pensa antes de narrar (bem mais lento)']].map(([v, t]) => `<option value="${v}" ${(c.claudeModoMestre || 'rapido') === v ? 'selected' : ''}>${t}</option>`).join('')}
+      </select>
+      <div class="ajuda">As regras, a ficha e as tabelas de dificuldade já vão prontas a cada turno, então o mestre não precisa "pensar" para narrar bem.</div>
     </div>
 
     <div class="linha-flex" style="margin-top:12px">

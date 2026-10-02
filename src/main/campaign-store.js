@@ -360,7 +360,7 @@ class CampaignStore {
     const d = this.dir(slug);
     const f = path.join(d, 'CLAUDE.md');
     const atual = (await exists(f)) ? await fsp.readFile(f, 'utf8') : null;
-    if (atual && atual.includes('<!-- cronicas:v9 -->')) return;
+    if (atual && atual.includes('<!-- cronicas:v10 -->')) return;
     const c = await readJson(path.join(d, 'campanha.json'));
     this.marcar();
     if (atual) await fsp.writeFile(path.join(d, 'CLAUDE.antigo.md'), atual, 'utf8'); // guarda sua versão

@@ -1,7 +1,7 @@
 // Prompt do Mestre, schema dos eventos e resumo do estado — compartilhado por todos os provedores.
 // As constantes do jogo vêm de ./regras e a validação da resposta do modelo de ./turno;
 // este arquivo só monta o que o mestre lê (tool schema, regras, CLAUDE.md, mensagem do turno).
-const { TEMAS, TIPOS_EVENTO, ATRIBUTOS, NOME_ATRIBUTO, PERIODOS, EMOCOES, IDIOMAS, mod, fmtMod } = require('./regras');
+const { TEMAS, TIPOS_EVENTO, ATRIBUTOS, NOME_ATRIBUTO, PERIODOS, EMOCOES, IDIOMAS, DIFICULDADES, AMEACAS, mod, fmtMod } = require('./regras');
 const { normalizarTurno, normalizarRoteiro, comporNarrativa, extrairJson } = require('./turno');
 const mapa = require('./mapa');
 
@@ -57,6 +57,7 @@ function montarTool(cat = { cenas: [], retratos: [] }) {
               vida: { type: 'integer', description: 'npc: vida atual (use em inimigos de combate).' },
               vidaMax: { type: 'integer', description: 'npc: vida máxima.' },
               tamanho: { type: 'string', enum: ['medio', 'grande', 'enorme'], description: 'npc inimigo: ocupa 1 quadrado (medio: humano, lobo), 2×2 (grande: ogro, urso, troll) ou 3×3 (enorme: dragão, gigante) no mapa de batalha.' },
+              ameaca: { type: 'string', enum: Object.keys(AMEACAS), description: 'npc inimigo: lacaio, soldado, elite ou chefe — o app calcula a vida pelo nível do herói; não mande vida/vidaMax ao criá-lo.' },
               alcance: { type: 'string', enum: ['corpo', 'distancia'], description: 'npc inimigo: luta corpo a corpo (avança até o herói) ou à distância (arco, magia — fica a 20-30 pés).' },
               positivo: { type: 'boolean', description: 'status_add: true se é um efeito benéfico (bênção), false se é condição ruim (veneno).' },
               atributo: { type: 'string', enum: ATRIBUTOS },
@@ -73,7 +74,7 @@ function montarTool(cat = { cenas: [], retratos: [] }) {
           properties: {
             dado: { type: 'string', description: 'Ex.: d20' },
             atributo: { type: 'string', enum: ATRIBUTOS },
-            dificuldade: { type: 'integer' },
+            dificuldade: { type: ['string', 'integer'], description: 'Palavra da tabela: facil, media, dificil, muito_dificil, heroica (o app põe o número).' },
             motivo: { type: 'string' },
             heroi: { type: 'string', description: 'GRUPO: nome do herói que deve rolar.' },
           },
@@ -129,7 +130,7 @@ function listaArtes(cat) {
   const itens = Object.values(cat.itens || {})
     .filter((i) => i.raridade && !vistos.has(i.id) && vistos.add(i.id))
     .map((i) => `${i.nome} [${i.raridade}]`).join('; ');
-  return `CENÁRIOS (campo "cena" — a arte de fundo; escolha o que mostra ONDE o jogador está):\n${cenas}\nRETRATOS (campo "retrato" no evento npc): ${ret}${bestiario ? `\nBESTIÁRIO (monstros com arte — use como inimigos: evento npc com relacao "hostil", vida/vidaMax e o retrato; o nome pode ser o do bestiário ou outro): ${bestiario}` : ''}${elenco ? `\nELENCO (NPCs prontos, com retrato de corpo inteiro — use o NOME e o retrato deles quando o papel combinar; ou só o retrato para um NPC novo parecido): ${elenco}` : ''}${itens ? `\nITENS COM ARTE (têm ilustração no inventário; ao dar um deles use o NOME EXATO; reserve lendários e míticos para momentos épicos): ${itens}` : ''}`;
+  return `CENÁRIOS (campo "cena" — a arte de fundo; escolha o que mostra ONDE o jogador está):\n${cenas}\nRETRATOS (campo "retrato" no evento npc): ${ret}${bestiario ? `\nBESTIÁRIO (monstros com arte — use como inimigos: evento npc com relacao "hostil", "ameaca" e o retrato; o nome pode ser o do bestiário ou outro): ${bestiario}` : ''}${elenco ? `\nELENCO (NPCs prontos, com retrato de corpo inteiro — use o NOME e o retrato deles quando o papel combinar; ou só o retrato para um NPC novo parecido): ${elenco}` : ''}${itens ? `\nITENS COM ARTE (têm ilustração no inventário; ao dar um deles use o NOME EXATO; reserve lendários e míticos para momentos épicos): ${itens}` : ''}`;
 }
 
 function regrasBase(campanha) {
@@ -158,7 +159,8 @@ NARRAÇÃO — ROTEIRO FALADO
 - Se a vida chegar a 0, o personagem cai inconsciente/à beira da morte — narre a situação dramática e dê uma chance de salvação.
 
 MECÂNICA (estilo d20)
-- Se o resultado de uma ação for incerto, NÃO o resolva: peça um teste em "rolagem" (d20 + modificador do atributo; dificuldade 5 fácil, 10 média, 15 difícil, 20 heroica) e pare a narração no suspense.
+- Se o resultado de uma ação for incerto, NÃO o resolva: peça um teste em "rolagem" (d20 + modificador do atributo) e pare a narração no suspense. Em "dificuldade" use a PALAVRA: ${Object.entries(DIFICULDADES).map(([k, v]) => `${k} (${v})`).join(', ')} — o app põe o número.
+- AMEAÇAS PRONTAS (não calcule vida nem dano, use a tabela): inimigo novo = evento npc com relacao "hostil" e "ameaca" — ${Object.values(AMEACAS).map((a) => `${a.nome} (dano ${a.dano}, testes contra ele: ${a.cd})`).join('; ')}. O app calcula a vida pelo nível do herói e pelo tamanho; depois de cada golpe mande só "vida" (a atual, vista no estado).
 - Ao receber o resultado de uma rolagem, narre a consequência respeitando-o. 20 natural = crítico espetacular; 1 natural = desastre.
 - Dano: 1-4 leve, 5-10 sério, 11+ brutal. Magias e habilidades especiais gastam mana (evento "mana" com valor negativo).
 - XP por superar desafios (10-50 típico, 100+ em marcos). Ouro em saques e recompensas.
@@ -170,7 +172,7 @@ Toda mudança no personagem ou no mundo DEVE ir em "eventos"; o app aplica e mos
   - efeitos temporários (envenenado, abençoado, exausto...) → status_add / status_remove
   - nova missão ou progresso → missao (estado ativa/concluida/falhou)
   - conheceu alguém → npc (relacao, retrato); descobriu local → lugar
-  - inimigo em combate → npc com relacao "hostil" e vida/vidaMax (OBRIGATÓRIO ao entrar no combate, para cada inimigo que luta — guarda, bandido, monstro; quem era neutro e partiu para a briga vira hostil); a cada golpe dele sofrido, emita npc de novo com a vida atualizada
+  - inimigo em combate → npc com relacao "hostil" e "ameaca" (OBRIGATÓRIO ao entrar no combate, para cada inimigo que luta — guarda, bandido, monstro; quem era neutro e partiu para a briga vira hostil); a cada golpe que ele sofrer, emita npc de novo só com "vida" atualizada
   - no combate a tela mostra um mapa quadriculado (1 quadrado = 1,5 m / 5 pés): ao criar o inimigo diga tamanho (medio/grande/enorme) e alcance (corpo/distancia); narre distâncias coerentes em pés (corpo a corpo = adjacente, arco = 20-30 pés)
   - itens: sempre dê um "icone" (um emoji) que combine com o item
 Organize o inventário em pastas: armas, armaduras, consumiveis, itens-chave, diversos — ou crie outra quando fizer sentido (pergaminhos, ingredientes, reliquias...).
@@ -235,14 +237,14 @@ const EXEMPLO_JSON = `{
     { "tipo": "npc", "nome": "Irmã Voss", "descricao": "Clériga ferida", "relacao": "aliado", "retrato": "paladina" },
     { "tipo": "npc", "nome": "Borin", "descricao": "Anão ferreiro, sarcástico", "relacao": "aliado", "retrato": "ferreiro-anao" }
   ],
-  "rolagem": { "dado": "d20", "atributo": "destreza", "dificuldade": 13, "motivo": "Saltar o fosso" },
+  "rolagem": { "dado": "d20", "atributo": "destreza", "dificuldade": "media", "motivo": "Saltar o fosso" },
   "sugestoes": ["Examinar a chave", "Seguir o corredor", "Ajudar a clériga"],
   "memoria": { "resumo": "Encontrou Irmã Voss e Borin feridos nas catacumbas; pegou a Chave de Osso.", "fatos": ["A Chave de Osso abre a cripta do Sino"], "ganchos_novos": ["Quem feriu Irmã Voss?"] }
 }`;
 
 /** CLAUDE.md que fica na pasta da campanha — o Claude Code carrega sozinho ao rodar nela. */
 function claudeMd(campanha) {
-  return `<!-- cronicas:v9 -->
+  return `<!-- cronicas:v10 -->
 # Crônicas — Mestre de RPG
 
 ${regrasBase(campanha)}
@@ -258,10 +260,11 @@ Você está rodando dentro da pasta da campanha. Pode CONSULTAR (Read/Glob/Grep)
 NÃO edite arquivos: o app Crônicas aplica os eventos e atualiza as pastas.
 
 ## Formato da resposta (OBRIGATÓRIO)
-Responda APENAS com um único objeto JSON válido — sem texto antes ou depois, sem cercas de código.
+Responda APENAS com um único objeto JSON válido — compacto, em UMA linha, sem texto antes ou depois, sem cercas de código.
+Economize: OMITA campos vazios ou que não mudaram (local, periodo, dia, capitulo, cena iguais; ato igual; listas vazias; enredo_ajuste vazio). memoria.resumo_geral SÓ quando pedido em [COMPACTAR MEMÓRIA].
 Campos: roteiro[] ({quem, texto, emocao}), tema, cena, falante, local, local_mapa, periodo, dia, capitulo, eventos[], rolagem (opcional), sugestoes[], memoria {resumo, fatos[], ato, ganchos_novos[], ganchos_resolvidos[], enredo_ajuste, resumo_geral}, e enredo quando pedido.
 Formato do enredo: {"titulo", "premissa", "antagonista": {"nome", "objetivo", "segredo"}, "segredos": [], "atos": [{"titulo", "objetivo", "virada"}], "ganchos": [], "final"} — 3 a 5 atos.
-Evento npc: {"tipo":"npc", "nome", "descricao", "relacao", "retrato", "nota", "vida", "vidaMax", "tamanho": medio|grande|enorme, "alcance": corpo|distancia} (tamanho e alcance em inimigos de combate).
+Evento npc: {"tipo":"npc", "nome", "descricao", "relacao", "retrato", "nota", "ameaca": lacaio|soldado|elite|chefe, "vida", "tamanho": medio|grande|enorme, "alcance": corpo|distancia} (ameaca, tamanho e alcance em inimigos de combate; "vida" só para atualizar depois de um golpe).
 O enredo e a memória ficam em \`historia/enredo.json\` e \`historia/memoria.json\` (o app mantém; cada mensagem já traz o essencial).
 Emoções: ${EMOCOES.join(', ')}.
 A lista de cenários e retratos disponíveis vem em cada mensagem, em [ARTES].

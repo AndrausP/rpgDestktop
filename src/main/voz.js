@@ -228,13 +228,13 @@ class Voz {
     const mix = trocada || par.mix;
     const hash = crypto.createHash('sha1').update(JSON.stringify(['k1', texto, mix, par.velocidade])).digest('hex').slice(0, 20);
     const arquivo = path.join(this.dirCache, `${hash}.wav`);
-    if (fs.existsSync(arquivo)) return { arquivo: `${hash}.wav`, cache: true };
+    if (fs.existsSync(arquivo)) return { arquivo: `${hash}.wav`, cache: true, taxa: par.taxa };
     if (this.emAndamento.has(hash)) return this.emAndamento.get(hash);
     const p = (async () => {
       await this.iniciar();
       const r = await this.enviar({ cmd: 'falar', texto, mix, velocidade: par.velocidade, saida: arquivo, lote });
       this.limparCache().catch(() => {});
-      return { arquivo: `${hash}.wav`, segundos: r.segundos };
+      return { arquivo: `${hash}.wav`, segundos: r.segundos, taxa: par.taxa };
     })();
     this.emAndamento.set(hash, p);
     try {

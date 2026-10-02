@@ -21,25 +21,41 @@ function recapitulacao(mensagens, n = 14) {
     .join('\n\n');
 }
 
-// vida padrão de um inimigo cujo mestre esqueceu vida/vidaMax (por tamanho)
-const VIDA_PADRAO = { medio: 12, grande: 30, enorme: 70 };
+const { vidaInimigo } = require('./regras');
+// fichas do compêndio (monstros do bestiário com vida, tamanho e alcance definidos): o mesmo monstro é sempre igual
+let FICHAS = {};
+try { FICHAS = require('../data/compendio-fichas.json').monstros || {}; } catch { /* sem compêndio */ }
 /**
  * Combate (tema batalha) precisa de inimigo com vida para aparecer no mapa e receber dano.
  * Completa a vida de hostis sem vida e, se ninguém hostil ficou em cena, põe quem o mestre colocou em foco
  * (ou quem falou no roteiro e não é aliado) como hostil.
  */
 function garantirInimigos(turno, state) {
-  if (turno.tema !== 'batalha') return;
   const norm = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   const herois = new Set((state.grupo || []).map((h) => norm(h.nome)));
   const doEstado = (nome) => (state.npcs || []).find((n) => norm(n.nome) === norm(nome));
   const eventosNpc = turno.eventos.filter((e) => e.tipo === 'npc' && e.nome);
+  // nível de referência: o do herói (no grupo, a média) — o mesmo "chefe" acompanha a evolução do grupo
+  const niveis = (state.grupo?.length ? state.grupo : [state.personagem]).map((h) => h?.nivel || 1);
+  const nivel = Math.round(niveis.reduce((s, n) => s + n, 0) / niveis.length) || 1;
   const ganhaVida = (e, base) => {
     if (e.vida != null || base?.vidaMax) return;
-    const v = VIDA_PADRAO[e.tamanho || base?.tamanho] || VIDA_PADRAO.medio;
+    // monstro do compêndio: a ficha manda (vida, tamanho, alcance)
+    const ficha = FICHAS[e.retrato] || FICHAS[base?.retrato] || FICHAS[slugify(e.nome)];
+    if (ficha?.vida_max) {
+      e.vida = e.vidaMax = ficha.vida_max;
+      e.tamanho = e.tamanho || ficha.tamanho;
+      e.alcance = e.alcance || ficha.alcance;
+      return;
+    }
+    // o mestre só disse a ameaça (lacaio/soldado/elite/chefe): o app calcula a vida
+    const v = vidaInimigo(e.ameaca || base?.ameaca || 'soldado', e.tamanho || base?.tamanho, nivel);
     e.vida = v;
     e.vidaMax = v;
   };
+  // ameaça informada vale em qualquer cena (o chefe pode aparecer antes de a luta começar)
+  for (const e of eventosNpc) if (e.ameaca || FICHAS[e.retrato]) ganhaVida(e, doEstado(e.nome));
+  if (turno.tema !== 'batalha') return;
   for (const e of eventosNpc) if ((e.relacao || doEstado(e.nome)?.relacao) === 'hostil') ganhaVida(e, doEstado(e.nome));
   const temInimigo = eventosNpc.some((e) => (e.relacao || doEstado(e.nome)?.relacao) === 'hostil' && (e.vida == null || e.vida > 0))
     || (state.npcs || []).some((n) => n.relacao === 'hostil' && n.vidaMax && n.vida > 0 && !eventosNpc.some((e) => norm(e.nome) === norm(n.nome) && e.relacao && e.relacao !== 'hostil'));

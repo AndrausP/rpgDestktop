@@ -3,6 +3,9 @@
 // A sessão é retomada com --resume, então o Claude Code mantém a memória da campanha.
 const { spawn } = require('child_process');
 const crypto = require('crypto');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 function matar(proc) {
   if (!proc || proc.exitCode != null) return;
@@ -15,6 +18,29 @@ function matar(proc) {
   try { proc.kill(); } catch { /* já morreu */ }
 }
 
+// O mestre não programa: troca o prompt de sistema de programação do Claude Code (~15 mil tokens) por um curto.
+// As regras do jogo continuam vindo do CLAUDE.md da pasta da campanha.
+const PROMPT_SISTEMA = 'Você é o Mestre de RPG do app Crônicas. As regras completas estão no CLAUDE.md desta pasta (já carregado no contexto). Leia lore/, npcs/ e historia/ só se precisar. Responda SEMPRE apenas com o objeto JSON do turno, compacto (uma linha, sem cercas de código), sem texto fora dele.';
+// Flags novas do CLI: se a versão instalada não conhecer alguma, o app lembra e para de mandar
+let flagsRapidas = true;
+
+/**
+ * Argumentos de velocidade. Medido (3 turnos reais, Sonnet): esforço baixo + prompt de sistema curto + só as
+ * ferramentas de leitura = turnos ~25-35% mais rápidos e entrada ~45% mais barata, sem perder qualidade do JSON.
+ */
+const ESFORCO = { rapido: 'low', equilibrado: 'medium', profundo: 'high' };
+function argsVelocidade(settings) {
+  if (!flagsRapidas) return [];
+  return ['--effort', ESFORCO[settings.claudeModoMestre] || 'low', '--system-prompt-file', arquivoPrompt(), '--tools', 'Read,Glob,Grep'];
+}
+/** O prompt curto vai por arquivo: no Windows a linha de comando (cmd.exe) estraga acentos e aspas. */
+function arquivoPrompt() {
+  const f = path.join(os.tmpdir(), 'cronicas-mestre-sistema.md');
+  try { if (fs.readFileSync(f, 'utf8') === PROMPT_SISTEMA) return f; } catch { /* ainda não existe */ }
+  fs.writeFileSync(f, PROMPT_SISTEMA, 'utf8');
+  return f;
+}
+
 function executar(settings, args, { cwd, stdin, timeoutMs = 300000, signal = null } = {}) {
   return new Promise((resolve, reject) => {
     const win = process.platform === 'win32';
@@ -22,7 +48,13 @@ function executar(settings, args, { cwd, stdin, timeoutMs = 300000, signal = nul
     if (win && /\s/.test(cmd) && !cmd.startsWith('"')) cmd = `"${cmd}"`;
     let proc;
     try {
-      proc = spawn(cmd, args, { cwd, shell: win, windowsHide: true, detached: !win, env: { ...process.env } });
+      // sem "pensar" antes de responder: o turno já vem com regras e estado prontos (com o Haiku, pensar levava
+      // o turno de ~27 s para ~92 s). Quem quiser liga em Configurações → Ritmo do mestre → Profundo.
+      const env = { ...process.env };
+      if (settings.claudeModoMestre !== 'profundo') env.MAX_THINKING_TOKENS = '0';
+      // no Windows (shell:true) caminho com espaço precisa de aspas
+      const a = win ? args.map((x) => (/\s/.test(x) && !/^".*"$/.test(x) ? `"${x}"` : x)) : args;
+      proc = spawn(cmd, a, { cwd, shell: win, windowsHide: true, detached: !win, env });
     } catch (e) {
       return reject(e);
     }
@@ -75,14 +107,24 @@ function parseResultado(out) {
 }
 
 async function turno({ settings, cwd, prompt, promptNovo, sessionId, signal = null }) {
-  const base = ['-p', '--output-format', 'json', '--allowedTools', 'Read,Glob,Grep'];
-  if (settings.claudeModelo) base.push('--model', settings.claudeModelo);
+  const montarBase = () => {
+    const b = ['-p', '--output-format', 'json', '--allowedTools', 'Read,Glob,Grep', ...argsVelocidade(settings)];
+    if (settings.claudeModelo) b.push('--model', settings.claudeModelo);
+    return b;
+  };
+  let base = montarBase();
 
   const rodar = async (sid, comId = true) => {
     // sessão nova com id próprio: o app sabe de antemão qual sessão é dele (versões antigas do CLI ignoram → sem a flag)
     const novoId = !sid && comId ? crypto.randomUUID() : null;
     const args = sid ? [...base, '--resume', sid] : novoId ? [...base, '--session-id', novoId] : base;
     const r = await executar(settings, args, { cwd, stdin: sid ? prompt : promptNovo || prompt, signal });
+    // CLI antigo sem --effort/--tools/--system-prompt: tira as flags de velocidade e tenta de novo
+    if (r.code !== 0 && flagsRapidas && /unknown option|unrecognized|effort|--tools|system-prompt/i.test(r.err || '') && !parseResultado(r.out)) {
+      flagsRapidas = false;
+      base = montarBase();
+      return rodar(sid, comId);
+    }
     if (novoId && r.code !== 0 && /unknown option|session-id/i.test(r.err || '')) return rodar(null, false);
     const j = parseResultado(r.out);
     if (!j) {

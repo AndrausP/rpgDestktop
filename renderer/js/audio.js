@@ -175,12 +175,13 @@ export class Audio {
   }
 
   /** Toca um WAV (ArrayBuffer) no canal de voz, independente do som ambiente estar ligado. */
-  async tocarVoz(arrayBuffer, { eco = 0 } = {}) {
+  async tocarVoz(arrayBuffer, { eco = 0, taxa = 1 } = {}) {
     const ctx = this.garantir();
     this.setVolumes({});
     const buf = await ctx.decodeAudioData(arrayBuffer);
     const src = ctx.createBufferSource();
     src.buffer = buf;
+    src.playbackRate.value = taxa; // tom do personagem/emoção (a fala já veio sintetizada mais lenta na mesma proporção)
     const g = ctx.createGain();
     g.gain.value = 1;
     src.connect(g).connect(this.bus.voz);
@@ -193,7 +194,7 @@ export class Audio {
     const promessa = new Promise((res) => (fim = res));
     src.onended = () => fim();
     src.start();
-    return { promessa, duracao: buf.duration, parar: () => { try { src.stop(); } catch { /* já parou */ } fim(); } };
+    return { promessa, duracao: buf.duration / taxa, parar: () => { try { src.stop(); } catch { /* já parou */ } fim(); } };
   }
   setVolume(v) { this.setVolumes({ master: v }); }
   setMusica(on) {

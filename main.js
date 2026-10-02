@@ -144,6 +144,15 @@ handle('config:escolherPasta', async () => {
 });
 handle('mestre:testar', () => engine.testar());
 remoto('catalogo:ler', async (slug) => catalogo.comUrls(await catalogo.montar(store.root, slug ? store.dir(slug) : null), slug));
+handle('compendio:listar', async () => {
+  const fichas = require('./src/data/compendio-fichas.json');
+  const cat = catalogo.comUrls(await catalogo.montar(store.root, null), null);
+  const itens = catalogo.ITENS.map((i) => ({ ...i, ...(fichas.itens[i.id] || {}), url: cat.itens[i.id]?.url || null }));
+  const monstros = cat.retratos
+    .filter((r) => r.monstro)
+    .map((r) => ({ id: r.id, nome: r.nome, desc: String(r.desc || '').replace(/^monstro:\s*/i, ''), url: r.url, ...(fichas.monstros[r.id] || {}) }));
+  return { itens, monstros };
+});
 handle('mapa:ler', () => mapa.paraTela());
 handle('mapa:rota', (de, para) => ({ ...mapa.rota(de, para), texto: mapa.descreverRota(de, para) }));
 handle('artes:abrirPasta', () => shell.openPath(path.join(store.root, '_artes')));

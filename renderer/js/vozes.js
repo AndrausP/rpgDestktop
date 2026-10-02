@@ -123,6 +123,43 @@ export function limparParaFala(t) {
     .trim();
 }
 
+const ORDINAIS = { 1: ['primeiro', 'primeira'], 2: ['segundo', 'segunda'], 3: ['terceiro', 'terceira'], 4: ['quarto', 'quarta'], 5: ['quinto', 'quinta'], 6: ['sexto', 'sexta'], 7: ['sétimo', 'sétima'], 8: ['oitavo', 'oitava'], 9: ['nono', 'nona'], 10: ['décimo', 'décima'] };
+/**
+ * Texto em português como deve ser FALADO: o Kokoro lê "Sr." como "ésse érre", "10h" como "dez agá"
+ * e "3ª" como "tercêira" mal acentuado (conferido no fonemizador). Só para a voz — a tela mostra o original.
+ */
+export function textoParaFalaPt(t) {
+  return String(t || '')
+    .replace(/\bSr\.(?=\s)/g, 'senhor').replace(/\bSra\.(?=\s)/g, 'senhora').replace(/\bSrta\.(?=\s)/g, 'senhorita')
+    .replace(/\bDr\.(?=\s)/g, 'doutor').replace(/\bDra\.(?=\s)/g, 'doutora').replace(/\bSto\.(?=\s)/g, 'santo').replace(/\bSta\.(?=\s)/g, 'santa')
+    .replace(/\b(\d{1,2})h(\d{2})\b/g, (_, h, m) => `${h} horas e ${+m}`)
+    .replace(/\b(\d{1,2})h\b/g, (_, h) => `${h} ${+h === 1 ? 'hora' : 'horas'}`)
+    .replace(/\b(\d{1,2})([ºª])/g, (m, n, g) => ORDINAIS[n]?.[g === 'ª' ? 1 : 0] || m)
+    .replace(/\bCD\s?(\d+)/g, 'dificuldade $1').replace(/\bCA\s?(\d+)/g, 'armadura $1')
+    .replace(/(\d+)\s?PV\b/g, '$1 pontos de vida').replace(/\bPV\b/g, 'pontos de vida')
+    .replace(/(\d+)\s?XP\b/g, '$1 de experiência').replace(/\bXP\b/g, 'experiência')
+    .replace(/(\d+)\s?PO\b/g, '$1 moedas de ouro')
+    .replace(/\s*[—–]\s*/g, ', ') // travessão vira pausa (no meio da frase o Kokoro às vezes ignora)
+    .replace(/^,\s*/, '').replace(/,\s*([.!?…])/g, '$1').replace(/,\s*,/g, ',');
+}
+
+/**
+ * Divide uma fala longa em frases (até ~200 caracteres por pedaço) para a voz começar logo:
+ * o 1º pedaço é só a 1ª frase, que o Kokoro sintetiza em ~1 s; o resto é sintetizado enquanto ela toca.
+ */
+export function dividirFala(texto, primeiro = false) {
+  const frases = String(texto).match(/[^.!?…]+(?:[.!?…]+["”»]?|$)\s*/g)?.map((f) => f.trim()).filter(Boolean) || [texto];
+  const out = [];
+  let atual = '';
+  for (const f of frases) {
+    const limite = primeiro && !out.length ? 0 : 200;
+    if (atual && (atual.length + f.length > limite)) { out.push(atual); atual = f; } else atual = atual ? `${atual} ${f}` : f;
+  }
+  if (atual) out.push(atual);
+  // pedaços muito curtos ("Não." ) colam no anterior, para não picotar
+  return out.reduce((acc, p) => (acc.length && p.length < 25 ? (acc[acc.length - 1] += ` ${p}`, acc) : (acc.push(p), acc)), []);
+}
+
 /** Emoção deduzida do verbo da narração ("— rosna Brom" → raiva). Usado quando o mestre não mandou roteiro. */
 export function emocaoDoVerbo(txt) {
   const t = norm(txt);
@@ -269,19 +306,21 @@ export class Narrador {
     const lote = `L${Date.now().toString(36)}${g}`;
     this.lote = lote;
     const velGlobal = this.cfg.vozVelocidade || 1;
-    const pedidos = segmentos.map((s, i) => ({ ...s, i: s.bloco ?? -1, preset: this.presetDe(s.quem, ctx) }));
+    // falas longas viram frases: a voz começa ~1 s depois em vez de esperar o trecho inteiro ser sintetizado
+    const pedidos = segmentos.flatMap((s, n) => dividirFala(s.texto, n === 0).map((texto, k) => ({ ...s, texto, parte: k, i: s.bloco ?? -1, preset: this.presetDe(s.quem, ctx) })));
 
     if (this.cfg.vozMotor === 'sistema' || this.semServico) return this.falarSistema(pedidos, vivo, velGlobal, ctx.idioma);
 
     const sintetizar = (p) => {
+      const limpo = p.texto.replace(/\[[^\]]{1,20}\]/g, '');
       return window.rpg.voz.falar({
-        texto: p.texto.replace(/\[[^\]]{1,20}\]/g, ''),
+        texto: (ctx.idioma || 'pt') === 'pt' ? textoParaFalaPt(limpo) : limpo,
         preset: p.preset,
         idioma: ctx.idioma || 'pt',
         emocao: p.emocao || 'neutro',
         velocidade: velGlobal, // o ritmo de cada personagem e da emoção é aplicado no processo principal
         lote,
-      }).then((r) => r.dados.buffer.slice(r.dados.byteOffset, r.dados.byteOffset + r.dados.byteLength));
+      }).then((r) => ({ buf: r.dados.buffer.slice(r.dados.byteOffset, r.dados.byteOffset + r.dados.byteLength), taxa: r.taxa || 1 }));
     };
     let i = 0;
     try {
@@ -306,10 +345,12 @@ export class Narrador {
         proximo?.catch(() => {}); // erro do próximo é tratado quando chegar a vez dele
         audio.abafar(true);
         this.onFalante(pedidos[i].quem, pedidos[i].i);
-        this.atual = await audio.tocarVoz(dados, { eco: pedidos[i].quem === 'narrador' ? 0.06 : 0.02 });
+        this.atual = await audio.tocarVoz(dados.buf, { eco: pedidos[i].quem === 'narrador' ? 0.06 : 0.02, taxa: dados.taxa });
         await this.atual.promessa;
         if (!vivo()) return;
-        await new Promise((r) => setTimeout(r, pedidos[i + 1]?.quem === pedidos[i].quem ? 90 : 220)); // respiro entre falas
+        // respiro entre falas: frases da mesma fala quase coladas; outro personagem, pausa maior
+        const prox = pedidos[i + 1];
+        await new Promise((r) => setTimeout(r, !prox ? 0 : prox.quem === pedidos[i].quem && prox.i === pedidos[i].i ? 60 : prox.quem === pedidos[i].quem ? 120 : 260));
       }
     } catch (e) {
       if (!vivo() || e.cancelado) return;

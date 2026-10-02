@@ -1,6 +1,6 @@
 // Valida e normaliza o que o modelo devolveu (tool use da API ou JSON do Claude Code) antes de tocar nas pastas:
 // nada fora do esquema passa, textos são cortados no tamanho, formatos alternativos são aceitos.
-const { TEMAS, TIPOS_EVENTO, ATRIBUTOS, PERIODOS, EMOCOES } = require('./regras');
+const { TEMAS, TIPOS_EVENTO, ATRIBUTOS, PERIODOS, EMOCOES, AMEACAS, dificuldadeNum } = require('./regras');
 
 /** Aceita qualquer coisa vinda do modelo e devolve um turno válido. */
 /**
@@ -18,13 +18,14 @@ function normalizarTurno(t, temaAtual, cat, { heroi = '', herois = [] } = {}) {
     e.relacao = /^alia/.test(r) ? 'aliado' : /^(hostil|hostis|inimig)/.test(r) ? 'hostil' : /^neutr/.test(r) ? 'neutro' : 'desconhecido';
     if (e.tamanho && !['medio', 'grande', 'enorme'].includes(e.tamanho)) e.tamanho = /enorm|imens|colos/i.test(e.tamanho) ? 'enorme' : /grand/i.test(e.tamanho) ? 'grande' : 'medio';
     if (e.alcance && !['corpo', 'distancia'].includes(e.alcance)) e.alcance = /dist|arco|magi|longe/i.test(e.alcance) ? 'distancia' : 'corpo';
+    if (e.ameaca != null) { const a = String(e.ameaca).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); e.ameaca = AMEACAS[a] ? a : /chef|boss|lend/.test(a) ? 'chefe' : /elit|forte/.test(a) ? 'elite' : /laca|fraco|minion/.test(a) ? 'lacaio' : 'soldado'; }
   }
   let rolagem = null;
   if (t.rolagem && typeof t.rolagem === 'object' && t.rolagem.motivo) {
     rolagem = {
       dado: /^d\d+$/i.test(t.rolagem.dado || '') ? t.rolagem.dado.toLowerCase() : 'd20',
       atributo: ATRIBUTOS.includes(t.rolagem.atributo) ? t.rolagem.atributo : null,
-      dificuldade: Number.isFinite(+t.rolagem.dificuldade) ? +t.rolagem.dificuldade : null,
+      dificuldade: dificuldadeNum(t.rolagem.dificuldade), // aceita "dificil" (o app põe o número)
       motivo: String(t.rolagem.motivo),
       ...(t.rolagem.heroi ? { heroi: String(t.rolagem.heroi).slice(0, 60) } : {}),
     };
